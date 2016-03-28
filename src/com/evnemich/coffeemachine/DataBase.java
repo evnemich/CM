@@ -1,49 +1,75 @@
 package com.evnemich.coffeemachine;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.evnemich.coffeemachine.models.Buyable;
 import com.evnemich.coffeemachine.models.users.User;
 
 public class DataBase {
+    
+	private static final String url = "jdbc:mysql://localhost:3306/test";
+	private static final String user = "root";
+	private static final String password = "458945";
 
-    boolean LogIn(User user, String login, String password){
-	return true;
-    }
-    
-    boolean Register(User user, String login, String password){
-	return true;
-    }
-    
-    void LogOut(User user){
+	private static Connection con;
+	private static Statement stmt;
+	private static ResultSet rs;
+
+    public static User LogIn(String login, String password) throws SQLException { // MAY RETURN ADMIN XXX
+
 	
+	String query = "select";
+	
+	con = DriverManager.getConnection(url, user, password);
+        stmt = con.createStatement();
+        rs = stmt.executeQuery(query);
+        
+	return new User(0);
     }
-    
-    int AskAmount(Buyable product){
+
+    public static User Register(String login, String password) {
+	return new User(0);
+    }
+
+    public static void LogOut(User user) {
+
+    }
+
+    public static int AskAmount(Buyable product) {
 	return 0;
     }
-    
-    boolean AddProduct(Buyable product){
+
+    public static boolean AddProduct(Buyable product, int amount) {
 	return true;
     }
-    
-    double AskPrice(Buyable product){
+
+    public static boolean BuyProduct(Buyable product, int amount) {
+	// this.getClass().getSimpleName()
+	return true;
+    }
+
+    public static double AskPrice(Buyable product) {
 	return 0.;
     }
-    
-    boolean SetPrice(Buyable product, double price){
+
+    public static boolean SetPrice(Buyable product, double price) {
 	return true;
     }
-    
-    double GetMoney(User user){
+
+    public static double GetMoney(int user) {
 	return 0.;
     }
-    
-    boolean Pay(User user, double amount){
+
+    public static boolean Pay(int user, double amount) {
 	return true;
     }
-    
-    boolean AddMoney(User user, int amount) {
+
+    public static boolean AddMoney(int user, double amount) {
 	return true;
     }
-    
-    
+
 }
