@@ -13,21 +13,19 @@ public class CoffeeMachine {
     Milk milk = new Milk();
     Sugar sugar = new Sugar();
     
-    Buyable products[] = {americano, cappuccino, latte, milk, sugar};
+    public Buyable products[] = {americano, cappuccino, latte, milk, sugar};
     
     User LogIn(String login, String password){
-	//TODO Code here 
-	return new User();
+	return DataBase.LogIn(login, password);
     }
     
     void LogOut(User user) {
-	//TODO Code here
+	DataBase.LogOut(user);
 	
     }
     
     User Register(String login, String password){
-	//TODO Code here
-	return new User();
+	return DataBase.Register(login, password);
     }
     
     boolean Refill(Admin admin, int amount[]){
@@ -35,8 +33,8 @@ public class CoffeeMachine {
 	if (products.length != amount.length)
 	    return false;
 	int i = 0;
-	for (Buyable buyable : products) {
-	    buyable.Add(amount[i++]);
+	for (Buyable product : this.products) {
+	    DataBase.AddProduct(product, amount[i++]); // MAY RETURN FALSE XXX
 	}
 	return true;
     }
@@ -58,13 +56,22 @@ public class CoffeeMachine {
 	user.AddMoney(amount);	
     }
 
+    public void SetPrices(double price[]){
+	int i = 0;
+	for (Buyable product : this.products) {
+	    DataBase.SetPrice(product, price[i++]); // MAY RETURN FALSE XXX
+	}
+    }
+    
     public static void main(String[] args) {
 
 	CoffeeMachine cm = new CoffeeMachine();
 	System.out.println(cm.milk.GetAmount());
-	cm.milk.Add(10);
+	//cm.milk.Add(10);
 	System.out.println(cm.milk.GetAmount());
 	System.out.println(cm.americano.GetAmount());
+	
+	cm.milk.GetAmount();
 	
 	
     }

@@ -1,34 +1,28 @@
 package com.evnemich.coffeemachine.models.users;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import com.evnemich.coffeemachine.DataBase;
 
 public class User {
     
-    private static final String url = "jdbc:mysql://localhost:3306/test";
-    private static final String user = "root";
-    private static final String password = "458945";
-    
-    private static Connection con;
-    private static Statement stmt;
-    private static ResultSet rs;
-    
+    private int id;
     private double purse;
     
-    public void AddMoney(double amount){
-	purse += amount;
+    public User(int id){
+	this.id = id;
+    }
+    
+    public boolean AddMoney(double amount){
+	return DataBase.AddMoney(id, amount);
     }
     
     public double GetMoney() {
-	return purse;
+	return DataBase.GetMoney(id);
     }
     
     public boolean Pay(double amount){
 	if (amount > purse)
 	    return false;
-	purse -= amount;
-	return true;
+	return DataBase.Pay(id, amount);
 	    
     }
 }
