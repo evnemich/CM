@@ -1,19 +1,21 @@
-package com.evnemich.models;
+package com.evnemich.coffeemachine.models;
+
+import com.evnemich.coffeemachine.models.users.Admin;
 
 public class Buyable {
 
-private int price = 0;
+private double price = 0;
 private int amount = 0;
     
     public void Add(int amount){
 	this.amount += amount;
     }
     
-    public void SetPrice(int price){
+    public void SetPrice(Admin admin, int price){
 	this.price = price;
     }
     
-    public int GetPrice(){
+    public double GetPrice(){
 	return this.price;
     }
     

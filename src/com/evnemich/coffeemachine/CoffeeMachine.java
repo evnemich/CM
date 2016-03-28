@@ -1,45 +1,53 @@
 package com.evnemich.coffeemachine;
 
-import com.evnemich.models.Buyable;
-import com.evnemich.models.drinks.*;
-import com.evnemich.models.ingredients.*;
-import com.evnemich.models.users.*;
+import com.evnemich.coffeemachine.models.Buyable;
+import com.evnemich.coffeemachine.models.drinks.*;
+import com.evnemich.coffeemachine.models.ingredients.*;
+import com.evnemich.coffeemachine.models.users.*;
 
 public class CoffeeMachine {
     
-    static Americano americano = new Americano();
-    static Cappuccino cappuccino;
-    static Latte latte;
-    static Milk milk = new Milk();
-    static Sugar sugar;
+    Americano americano = new Americano();
+    Cappuccino cappuccino = new Cappuccino();
+    Latte latte = new Latte();
+    Milk milk = new Milk();
+    Sugar sugar = new Sugar();
+    
+    Buyable products[] = {americano, cappuccino, latte, milk, sugar};
     
     User LogIn(String login, String password){
-	// Code here
+	//TODO Code here 
 	return new User();
     }
     
     void LogOut(User user) {
-	// Code here
+	//TODO Code here
 	
     }
     
     User Register(String login, String password){
-	// Code here
+	//TODO Code here
 	return new User();
     }
     
-    void Refill(Admin admin, Drink drinks[], Ingredient ingredients[]){
-	// Code here
-	
-    }
-    
-    boolean Buy(User user, Drink products[], int amount[]){
+    boolean Refill(Admin admin, int amount[]){
 	// Code here
 	if (products.length != amount.length)
 	    return false;
-	for (int i = 0; i < products.length; i++) {
-	    products[i].Buy(amount[i]);;
-	    //user.Pay(products[i].cost);
+	int i = 0;
+	for (Buyable buyable : products) {
+	    buyable.Add(amount[i++]);
+	}
+	return true;
+    }
+    
+    boolean Buy(User user, int amount[]){
+	// Code here
+	if (products.length != amount.length)
+	    return false;
+	int i = 0;
+	for (Buyable buyable : products) {
+	    buyable.Buy(amount[i++]); // NO MONEY // NO PRODUCT
 	}
 	return true;
 		    
@@ -52,10 +60,11 @@ public class CoffeeMachine {
 
     public static void main(String[] args) {
 
-	System.out.println(CoffeeMachine.milk.GetAmount());
-	CoffeeMachine.milk.Add(10);
-	System.out.println(CoffeeMachine.milk.GetAmount());
-	System.out.println(CoffeeMachine.americano.GetAmount());
+	CoffeeMachine cm = new CoffeeMachine();
+	System.out.println(cm.milk.GetAmount());
+	cm.milk.Add(10);
+	System.out.println(cm.milk.GetAmount());
+	System.out.println(cm.americano.GetAmount());
 	
 	
     }
