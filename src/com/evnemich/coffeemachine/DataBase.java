@@ -10,24 +10,28 @@ import com.evnemich.coffeemachine.models.Buyable;
 import com.evnemich.coffeemachine.models.users.User;
 
 public class DataBase {
-    
-	private static final String url = "jdbc:mysql://localhost:3306/test";
-	private static final String user = "root";
-	private static final String password = "458945";
 
-	private static Connection con;
-	private static Statement stmt;
-	private static ResultSet rs;
+    private static final String url = "jdbc:mysql://localhost:3306/coffeemachine";
+    private static final String user = "root";
+    private static final String password = "458945";
 
-    public static User LogIn(String login, String password) throws SQLException { // MAY RETURN ADMIN XXX
+    private static Connection con;
+    private static Statement stmt;
 
-	
-	String query = "select";
-	
-	con = DriverManager.getConnection(url, user, password);
-        stmt = con.createStatement();
-        rs = stmt.executeQuery(query);
-        
+    public static User LogIn(String login, String password) throws SQLException { // MAY
+										  // RETURN
+										  // ADMIN
+										  // XXX
+
+	String query = "select user_id FROM coffeemachine.users WHERE login=" + login + " AND password=" + password;
+
+	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password);
+	stmt = con.createStatement();
+	ResultSet rs = stmt.executeQuery(query);
+	rs.last();
+	if (rs.getRow() == 1)
+	    return new User(rs.getInt(0));
+
 	return new User(0);
     }
 
@@ -39,36 +43,42 @@ public class DataBase {
 
     }
 
-    public static int AskAmount(Buyable product) {
+    public static int AskAmount(User user, Buyable product) {
 	return 0;
     }
 
-    public static boolean AddProduct(Buyable product, int amount) {
+    public static boolean AddProduct(User user, Buyable product, int amount) {
 	return true;
     }
 
-    public static boolean BuyProduct(Buyable product, int amount) {
+    /*
+     * public static boolean AddNewProduct(Buyable product) {
+     * 
+     * } //
+     */
+
+    public static boolean BuyProduct(User user, Buyable product, int amount) {
 	// this.getClass().getSimpleName()
 	return true;
     }
 
-    public static double AskPrice(Buyable product) {
+    public static double AskPrice(User user, Buyable product) {
 	return 0.;
     }
 
-    public static boolean SetPrice(Buyable product, double price) {
+    public static boolean SetPrice(User user, Buyable product, double price) {
 	return true;
     }
 
-    public static double GetMoney(int user) {
+    public static double GetMoney(User user) {
 	return 0.;
     }
 
-    public static boolean Pay(int user, double amount) {
+    public static boolean Pay(User user, double amount) {
 	return true;
     }
 
-    public static boolean AddMoney(int user, double amount) {
+    public static boolean AddMoney(User user, double amount) {
 	return true;
     }
 

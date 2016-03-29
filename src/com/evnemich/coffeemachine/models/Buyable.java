@@ -1,21 +1,22 @@
 package com.evnemich.coffeemachine.models;
 
 import com.evnemich.coffeemachine.DataBase;
+import com.evnemich.coffeemachine.models.users.User;
 
 public class Buyable {
-    
-    public double GetPrice(){
-	return DataBase.AskPrice(this);
+
+    public double GetPrice(User user) {
+	return DataBase.AskPrice(user, this);
     }
-    
-    public int GetAmount(){
-	return DataBase.AskAmount(this);
+
+    public int GetAmount(User user) {
+	return DataBase.AskAmount(user, this);
     }
-    
-    public boolean Buy(int amount){
-	if(amount > GetAmount())
+
+    public boolean Buy(User user, int amount) {
+	if (amount > GetAmount(user))
 	    return false;
-	DataBase.BuyProduct(this, amount);
+	DataBase.BuyProduct(user, this, amount);
 	return true;
     }
 }
