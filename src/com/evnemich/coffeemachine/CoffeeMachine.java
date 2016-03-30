@@ -21,16 +21,16 @@ public class CoffeeMachine {
 	return DataBase.LogIn(login, password);
     }
 
-    public void LogOut(User user) {
+    public void LogOut(User user) throws SQLException {
 	DataBase.LogOut(user);
 
     }
 
-    public User Register(String login, String password) {
+    public User Register(String login, String password) throws SQLException {
 	return DataBase.Register(login, password);
     }
 
-    public boolean Refill(Admin admin, int amount[]) {
+    public boolean Refill(Admin admin, int amount[]) throws SQLException {
 	// Code here
 	if (products.length != amount.length)
 	    return false;
@@ -41,7 +41,7 @@ public class CoffeeMachine {
 	return true;
     }
 
-    boolean Buy(User user, int amount[]) {
+    boolean Buy(User user, int amount[]) throws SQLException {
 	// Code here
 	if (products.length != amount.length)
 	    return false;
@@ -72,16 +72,16 @@ public class CoffeeMachine {
 	return true;
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws SQLException {
+	String login = "evnemich";
+	String password = "p@ssw0rd";
 	CoffeeMachine cm = new CoffeeMachine();
-	System.out.println(cm.milk.GetAmount(null));
-	// cm.milk.Add(10);
-	System.out.println(cm.milk.GetAmount(null));
-	System.out.println(cm.americano.GetAmount(null));
-
-	cm.milk.GetAmount();
-
+	//User user = cm.Register(login, password);
+	User user = cm.LogIn(login, password);
+	System.out.println(user.getId());
+	System.out.println(user.GetMoney());
+	user.AddMoney(100);
+	System.out.println(user.GetMoney());
     }
 
 }
