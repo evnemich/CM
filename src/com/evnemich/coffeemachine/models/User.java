@@ -1,4 +1,4 @@
-package com.evnemich.coffeemachine.models.users;
+package com.evnemich.coffeemachine.models;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -8,14 +8,15 @@ import com.evnemich.coffeemachine.DataBase;
 public class User {
 
     private int id;
+    public final boolean admin;
     private Connection con;
-    private double purse;
-
     public User(int id) {
+	admin = false;
 	// Empty constructor to make useless instance
     }
 
-    public User(int id, Connection con) {
+    public User(int id, Connection con, boolean admin) {
+	this.admin = admin;
 	this.id = id;
 	this.con = con;
     }
@@ -32,18 +33,16 @@ public class User {
 	con.close();
     }
 
-    public boolean AddMoney(double amount) {
-	return DataBase.AddMoney(this, amount);
+    public boolean addMoney(double amount) {
+	return DataBase.addMoney(this, amount);
     }
 
-    public double GetMoney() {
-	return DataBase.GetMoney(this);
+    public double getMoney() {
+	return DataBase.getMoney(this);
     }
 
-    public boolean Pay(double amount) {
-	if (amount > purse)
-	    return false;
-	return DataBase.Pay(this, amount);
+    public boolean pay(double amount) {
+	return DataBase.pay(this, amount);
 
     }
 }

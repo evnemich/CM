@@ -6,35 +6,27 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.evnemich.coffeemachine.models.Buyable;
-import com.evnemich.coffeemachine.models.users.User;
+import com.evnemich.coffeemachine.models.*;
 
 public class DataBase {
 
-    private static final String url = "jdbc:mysql://localhost:3306/coffeemachine";
+    private static final String url = "jdbc:mysql://localhost:3306/coffeemachine?useSSL=false";
     private static final String user = "root";
     private static final String password = "458945";
 
-    public static User LogIn(String login, String password) throws SQLException { // MAY
-										  // RETURN
-										  // ADMIN
-										  // XXX
-	User user;
+    public static User logIn(String login, String password) throws SQLException {
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
-	String query = "select user_id FROM coffeemachine.users WHERE login='" + login + "' AND password='" + password
-		+ "';";
+	String query = "SELECT user_id, admin FROM users WHERE login='" + login + "' AND password='" + password + "';";
 
-	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password); // REALIZE
-											   // POOL
-											   // OF
-											   // CONNECTIONS?
+	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password); // make
+											   // pool
 											   // XXX
 	stmt = con.createStatement();
 	rs = stmt.executeQuery(query);
 	rs.next();
-	user = new User(rs.getInt(1), con);
+	User user = new User(rs.getInt(1), con, rs.getBoolean(2));
 
 	stmt.close();
 	rs.close();
@@ -42,51 +34,63 @@ public class DataBase {
 	return user;
     }
 
-    public static User Register(String login, String password) throws SQLException {
+    public static User register(String login, String password) throws SQLException {
 
-	User user;
+	Connection con;
+	Statement stmt;
+	String query = "INSERT INTO users (login, password) VALUES ('" + login + "','" + password + "');";
+
+	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password); // REALIZE
+	stmt = con.createStatement();
+	try {
+	    stmt.executeUpdate(query);
+	} catch (SQLException se) {
+	    System.err.println("USER ALREADY EXISTS");
+	}
+	return logIn(login, password);
+
+    }
+
+    public static void logOut(User user) throws SQLException {
+	user.getConnection().close();
+    }
+
+    public static void getData() throws SQLException {
+
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
-	String query = "INSERT INTO users (login, password) VALUES ('" + login + "','" + password + "');";
+	String query = "SELECT name, drink FROM products ORDER BY time;";
 
-	// try{
-	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password); // REALIZE
+	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password);
+
 	stmt = con.createStatement();
 	rs = stmt.executeQuery(query);
+	while (rs.next()) {
+	    if (rs.getBoolean(2) == true)
+		CoffeeMachine.drinks.add(new Drink(rs.getString(1)));
+	    else
+		CoffeeMachine.ingredients.add(new Ingredient(rs.getString(1)));
+	}
 
-	query = "SELECT user_id FROM users WHERE login='" + login + "'";
-	stmt = con.createStatement();
-	rs = stmt.executeQuery(query);
-	stmt.close();
-	user = new User(rs.getInt(1), con);
 	rs.close();
-	return user;
-	// }catch(SQLException se){
-	// System.out.println(rs.getMetaData().getColumnCount());
-	// RS EXCEPTION?
-	// }
-	// return new User(0);
+	stmt.close();
+	con.close();
     }
 
-    public static void LogOut(User user) throws SQLException {
-	user.closeConnection();
-	// TODO
-    }
-
-    public static int AskAmount(User user, Buyable product) throws SQLException {
+    public static int askAmount(User user, Buyable product) throws SQLException {
 	// TODO
 	int amount = 0;
 	Statement stmt;
 	ResultSet rs;
-	String query = "SELECT amount FROM products WHERE name='" + product.getClass().getSimpleName() + "';";
+	String query = "SELECT amount FROM products WHERE name='" + product.getName() + "';";
 
 	try {
 	    stmt = user.getConnection().createStatement();
 	    rs = stmt.executeQuery(query);
-	    stmt.close();
-	    rs.close();
+	    rs.next();
 	    amount = rs.getInt(1);
+	    stmt.close();
 	    rs.close();
 	} catch (SQLException se) {
 	    // So bad
@@ -94,35 +98,57 @@ public class DataBase {
 	return amount;
     }
 
-    public static void AddProduct(User user, Buyable product, int amount) throws SQLException {
-	// TODO
+    public static void addProduct(User user, Buyable product, int amount) throws SQLException {
+	if (!user.admin)
+	    return;
 	Statement stmt;
-	String query = "UPDATE products WHERE name='" + product.getClass().getSimpleName() + "' SET amount=amount+"
-		+ amount + ";";
+	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product.getName() + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
-	    stmt.executeQuery(query).close();
+	    stmt.executeUpdate(query);
 	    stmt.close();
 	} catch (SQLException se) {
 	    // So bad
 	}
     }
 
-    /*
-     * public static boolean AddNewProduct(Buyable product) {
-     * 
-     * } //
-     */
+    public static void removeProduct(User user, Buyable product, boolean drink) {
 
-    public static boolean BuyProduct(User user, Buyable product, int amount) {
-	// this.getClass().getSimpleName()
-	// TODO
+	if (!user.admin)
+	    return;
 	Statement stmt;
-	String query = "UPDATE products WHERE name='" + product.getClass().getSimpleName() + "' SET amount=amount-"
-		+ amount + ";";
+	String query = "DELETE FROM products" + " WHERE name='" + product.getName() + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
-	    stmt.executeQuery(query).close();
+	    stmt.executeUpdate(query);
+	    stmt.close();
+	} catch (SQLException se) {
+	    // So bad
+	}
+    }
+
+    public static void addNewProduct(User user, Buyable product, boolean drink) {
+
+	if (!user.admin)
+	    return;
+	Statement stmt;
+	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product.getName() + "'," + drink + ");";
+	try {
+	    stmt = user.getConnection().createStatement();
+	    stmt.executeUpdate(query);
+	    stmt.close();
+	} catch (SQLException se) {
+	    // So bad
+	}
+    }
+
+    public static boolean buyProduct(User user, Buyable product, int amount) {
+	// TODO
+	Statement stmt;
+	String query = "UPDATE products" + " SET amount=amount-" + amount + " WHERE name='" + product.getName() + "';";
+	try {
+	    stmt = user.getConnection().createStatement();
+	    stmt.executeUpdate(query);
 	    stmt.close();
 	    return true;
 	} catch (SQLException se) {
@@ -131,17 +157,18 @@ public class DataBase {
 	}
     }
 
-    public static double AskPrice(User user, Buyable product) {
+    public static double askPrice(User user, Buyable product) {
 	// TODO
 	double price = 0;
 	ResultSet rs;
 	Statement stmt;
-	String query = "SELECT price FROM products WHERE name='" + product.getClass().getSimpleName() + "';";
+	String query = "SELECT price FROM products" + " WHERE name='" + product.getName() + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    rs = stmt.executeQuery(query);
-	    stmt.close();
+	    rs.next();
 	    price = rs.getDouble(1);
+	    stmt.close();
 	    rs.close();
 	} catch (SQLException se) {
 	    // So bad
@@ -149,14 +176,15 @@ public class DataBase {
 	return price;
     }
 
-    public static boolean SetPrice(User user, Buyable product, double price) {
-	// TODO
+    public static boolean setPrice(User user, Buyable product, double price) {
+
+	if (!user.admin)
+	    return false;
 	Statement stmt;
-	String query = "UPDATE products WHERE name='" + product.getClass().getSimpleName() + "' SET price=" + price
-		+ ";";
+	String query = "UPDATE products SET price=" + price + " WHERE name='" + product.getName() + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
-	    stmt.executeQuery(query).close();
+	    stmt.executeUpdate(query);
 	    stmt.close();
 	    return true;
 	} catch (SQLException se) {
@@ -165,17 +193,18 @@ public class DataBase {
 	}
     }
 
-    public static double GetMoney(User user) {
+    public static double getMoney(User user) {
 	// TODO
 	double purse = 0;
 	ResultSet rs;
 	Statement stmt;
-	String query = "SELECT purse FROM users WHERE user_id=" + user.getId() + ";";
+	String query = "SELECT purse FROM users" + " WHERE user_id=" + user.getId() + ";";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    rs = stmt.executeQuery(query);
-	    stmt.close();
+	    rs.next();
 	    purse = rs.getDouble(1);
+	    stmt.close();
 	    rs.close();
 	} catch (SQLException se) {
 	    // So bad
@@ -183,13 +212,13 @@ public class DataBase {
 	return purse;
     }
 
-    public static boolean Pay(User user, double amount) {
+    public static boolean pay(User user, double amount) {
 	// TODO
 	Statement stmt;
-	String query = "UPDATE users WHERE user_id=" + user.getId() + " SET purse=purse-" + amount + ";";
+	String query = "UPDATE users SET purse=purse-" + amount + " WHERE user_id=" + user.getId() + ";";
 	try {
 	    stmt = user.getConnection().createStatement();
-	    stmt.executeQuery(query).close();
+	    stmt.executeUpdate(query);
 	    stmt.close();
 	    return true;
 	} catch (SQLException se) {
@@ -198,13 +227,13 @@ public class DataBase {
 	return false;
     }
 
-    public static boolean AddMoney(User user, double amount) {
+    public static boolean addMoney(User user, double amount) {
 	// TODO
 	Statement stmt;
 	String query = "UPDATE users SET purse=purse+" + amount + " WHERE user_id=" + user.getId() + ";";
 	try {
 	    stmt = user.getConnection().createStatement();
-	    stmt.executeQuery(query).close();
+	    stmt.executeUpdate(query);
 	    stmt.close();
 	    return true;
 	} catch (SQLException se) {

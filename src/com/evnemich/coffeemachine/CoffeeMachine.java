@@ -1,87 +1,90 @@
 package com.evnemich.coffeemachine;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-import com.evnemich.coffeemachine.models.Buyable;
-import com.evnemich.coffeemachine.models.drinks.*;
-import com.evnemich.coffeemachine.models.ingredients.*;
-import com.evnemich.coffeemachine.models.users.*;
+import com.evnemich.coffeemachine.models.*;
 
 public class CoffeeMachine {
 
-    Americano americano = new Americano();
-    Cappuccino cappuccino = new Cappuccino();
-    Latte latte = new Latte();
-    Milk milk = new Milk();
-    Sugar sugar = new Sugar();
+    public static ArrayList<Drink> drinks = new ArrayList<Drink>();
+    public static ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 
-    public Buyable products[] = { americano, cappuccino, latte, milk, sugar };
-
-    public User LogIn(String login, String password) throws SQLException {
-	return DataBase.LogIn(login, password);
+    public User logIn(String login, String password) throws SQLException {
+	DataBase.getData();
+	return DataBase.logIn(login, password);
     }
 
-    public void LogOut(User user) throws SQLException {
-	DataBase.LogOut(user);
+    public void logOut(User user) throws SQLException {
+	DataBase.logOut(user);
 
     }
 
-    public User Register(String login, String password) throws SQLException {
-	return DataBase.Register(login, password);
+    public User register(String login, String password) throws SQLException {
+	return DataBase.register(login, password);
     }
 
-    public boolean Refill(Admin admin, int amount[]) throws SQLException {
+    public boolean refill(User admin, ArrayList<Buyable> products, int amount[]) throws SQLException {
 	// Code here
-	if (products.length != amount.length)
+	if (!admin.admin || products.size() != amount.length)
 	    return false;
 	int i = 0;
-	for (Buyable product : this.products) {
-	    DataBase.AddProduct(admin, product, amount[i++]); // MAY RETURN FALSE XXX
+	for (Buyable product : products) {
+	    DataBase.addProduct(admin, product, amount[i++]); // MAY RETURN
+							      // FALSE XXX
 	}
 	return true;
     }
 
-    boolean Buy(User user, int amount[]) throws SQLException {
+    boolean buy(User user, ArrayList<Buyable> products, int amount[]) throws SQLException {
 	// Code here
-	if (products.length != amount.length)
+	if (products.size() != amount.length)
 	    return false;
 	int i = 0;
 	for (Buyable buyable : products) {
-	    buyable.Buy(user, amount[i++]); // NO MONEY // NO PRODUCT
+	    buyable.buy(user, amount[i++]); // NO MONEY // NO PRODUCT
 	}
 	return true;
     }
 
-    /*
-     * public boolean AddProduct(User user, Buyable product){ if
-     * (user.getClass().getSimpleName().equals(Admin.class.getSimpleName()))
-     * return false; DataBase.AddNewProduct(product); return true; } //
-     */
-
-    public void AddMoney(User user, double amount) {
-	user.AddMoney(amount);
+    public void addNewProduct(User admin, Buyable product) {
+	if(!admin.admin) return;
+	if (product.getClass().getSimpleName().equals("Drink"))
+	    DataBase.addNewProduct(admin, product, true);
+	else
+	    DataBase.addNewProduct(admin, product, false);
     }
 
-    public boolean SetPrices(User user, double price[]) {
-	if (user.getClass().getSimpleName() != "Admin")
+    public void addMoney(User user, double amount) {
+	user.addMoney(amount);
+    }
+
+    public boolean setPrices(User admin, ArrayList<Buyable> products, double price[]) {
+	if (!admin.admin || products.size() != price.length)
 	    return false;
 	int i = 0;
-	for (Buyable product : this.products) {
-	    DataBase.SetPrice(user, product, price[i++]); // MAY RETURN FALSE XXX
+	for (Buyable product : products) {
+	    DataBase.setPrice(admin, product, price[i++]); // MAY RETURN FALSE
+							   // XXX
 	}
 	return true;
     }
 
     public static void main(String[] args) throws SQLException {
+	// *
 	String login = "evnemich";
 	String password = "p@ssw0rd";
+	String name = "latte";
 	CoffeeMachine cm = new CoffeeMachine();
-	//User user = cm.Register(login, password);
-	User user = cm.LogIn(login, password);
+	Drink latte = new Drink(name);
+	/// User user = (User) cm.register(login, password);
+	User user = cm.logIn(login, password);
 	System.out.println(user.getId());
-	System.out.println(user.GetMoney());
-	user.AddMoney(100);
-	System.out.println(user.GetMoney());
+	System.out.println(user.getMoney());
+	cm.addNewProduct(user, latte);
+	System.out.println(latte.getAmount(user));
+	latte.add(user, 1);
+	System.out.println(latte.getAmount(user));
     }
 
 }
