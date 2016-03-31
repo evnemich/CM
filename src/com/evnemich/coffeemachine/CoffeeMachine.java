@@ -47,12 +47,13 @@ public class CoffeeMachine {
 	return true;
     }
 
-    public void addNewProduct(User admin, Buyable product) {
+    public void addNewProduct(User admin, Buyable product, double price) {
 	if(!admin.admin) return;
 	if (product.getClass().getSimpleName().equals("Drink"))
 	    DataBase.addNewProduct(admin, product, true);
 	else
 	    DataBase.addNewProduct(admin, product, false);
+	DataBase.setPrice(admin, product, price);
     }
 
     public void addMoney(User user, double amount) {
@@ -79,11 +80,13 @@ public class CoffeeMachine {
 	Drink latte = new Drink(name);
 	/// User user = (User) cm.register(login, password);
 	User user = cm.logIn(login, password);
+	//user.addMoney(100);
 	System.out.println(user.getId());
 	System.out.println(user.getMoney());
-	cm.addNewProduct(user, latte);
+	//latte.setPrice(user, 10);
+	cm.addNewProduct(user, latte, 10);
 	System.out.println(latte.getAmount(user));
-	latte.add(user, 1);
+	latte.buy(user, 1);
 	System.out.println(latte.getAmount(user));
     }
 

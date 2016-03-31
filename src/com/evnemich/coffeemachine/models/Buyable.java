@@ -35,7 +35,9 @@ public class Buyable {
     public boolean buy(User user, int amount) throws SQLException {
 	if (amount > getAmount(user))
 	    return false;
-	DataBase.buyProduct(user, this, amount);
+	if (DataBase.buyProduct(user, this, amount))
+	    user.pay(this.getPrice(user));
+	
 	return true;
     }
 }
