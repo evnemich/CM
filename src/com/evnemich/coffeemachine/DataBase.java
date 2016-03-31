@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.evnemich.coffeemachine.models.*;
+import com.evnemich.coffeemachine.models.Buyable;
+import com.evnemich.coffeemachine.models.Drink;
+import com.evnemich.coffeemachine.models.Ingredient;
+import com.evnemich.coffeemachine.models.User;
 
 public class DataBase {
 
@@ -14,7 +17,8 @@ public class DataBase {
     private static final String user = "root";
     private static final String password = "458945";
 
-    public static User logIn(String login, String password) throws SQLException {
+    public static User logIn(String login, String password) throws SQLException, ClassNotFoundException {
+	Class.forName("com.mysql.jdbc.Driver");
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
@@ -25,16 +29,22 @@ public class DataBase {
 											   // XXX
 	stmt = con.createStatement();
 	rs = stmt.executeQuery(query);
-	rs.next();
+	if (!rs.next()) {
+	    User user = new User(0);
+	    rs.close();
+	    stmt.close();
+	    con.close();
+	    return user;
+	}
 	User user = new User(rs.getInt(1), con, rs.getBoolean(2));
 
-	stmt.close();
 	rs.close();
+	stmt.close();
 
 	return user;
     }
 
-    public static User register(String login, String password) throws SQLException {
+    public static User register(String login, String password) throws SQLException, ClassNotFoundException {
 
 	Connection con;
 	Statement stmt;
@@ -46,7 +56,9 @@ public class DataBase {
 	    stmt.executeUpdate(query);
 	} catch (SQLException se) {
 	    System.err.println("USER ALREADY EXISTS");
+	    return new User(0);
 	}
+	stmt.close();
 	return logIn(login, password);
 
     }
@@ -80,6 +92,8 @@ public class DataBase {
 
     public static int askAmount(User user, Buyable product) throws SQLException {
 	// TODO
+	if (user.getId() == 0)
+	    return 0;
 	int amount = 0;
 	Statement stmt;
 	ResultSet rs;
@@ -90,8 +104,8 @@ public class DataBase {
 	    rs = stmt.executeQuery(query);
 	    rs.next();
 	    amount = rs.getInt(1);
-	    stmt.close();
 	    rs.close();
+	    stmt.close();
 	} catch (SQLException se) {
 	    // So bad
 	}
@@ -99,7 +113,7 @@ public class DataBase {
     }
 
     public static void addProduct(User user, Buyable product, int amount) throws SQLException {
-	if (!user.admin)
+	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
 	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product.getName() + "';";
@@ -114,7 +128,7 @@ public class DataBase {
 
     public static void removeProduct(User user, Buyable product, boolean drink) {
 
-	if (!user.admin)
+	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
 	String query = "DELETE FROM products" + " WHERE name='" + product.getName() + "';";
@@ -129,7 +143,7 @@ public class DataBase {
 
     public static void addNewProduct(User user, Buyable product, boolean drink) {
 
-	if (!user.admin)
+	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
 	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product.getName() + "'," + drink + ");";
@@ -144,6 +158,8 @@ public class DataBase {
 
     public static boolean buyProduct(User user, Buyable product, int amount) {
 	// TODO
+	if (user.getId() == 0)
+	    return false;
 	Statement stmt;
 	String query = "UPDATE products" + " SET amount=amount-" + amount + " WHERE name='" + product.getName() + "';";
 	try {
@@ -159,6 +175,8 @@ public class DataBase {
 
     public static double askPrice(User user, Buyable product) {
 	// TODO
+	if (user.getId() == 0)
+	    return 0;
 	double price = 0;
 	ResultSet rs;
 	Statement stmt;
@@ -168,8 +186,8 @@ public class DataBase {
 	    rs = stmt.executeQuery(query);
 	    rs.next();
 	    price = rs.getDouble(1);
-	    stmt.close();
 	    rs.close();
+	    stmt.close();
 	} catch (SQLException se) {
 	    // So bad
 	}
@@ -195,6 +213,8 @@ public class DataBase {
 
     public static double getMoney(User user) {
 	// TODO
+	if (user.getId() == 0)
+	    return 0;
 	double purse = 0;
 	ResultSet rs;
 	Statement stmt;
@@ -204,8 +224,8 @@ public class DataBase {
 	    rs = stmt.executeQuery(query);
 	    rs.next();
 	    purse = rs.getDouble(1);
-	    stmt.close();
 	    rs.close();
+	    stmt.close();
 	} catch (SQLException se) {
 	    // So bad
 	}
@@ -214,6 +234,8 @@ public class DataBase {
 
     public static boolean pay(User user, double amount) {
 	// TODO
+	if (user.getId() == 0)
+	    return false;
 	Statement stmt;
 	String query = "UPDATE users SET purse=purse-" + amount + " WHERE user_id=" + user.getId() + ";";
 	try {
@@ -229,6 +251,8 @@ public class DataBase {
 
     public static boolean addMoney(User user, double amount) {
 	// TODO
+	if (user.getId() == 0)
+	    return false;
 	Statement stmt;
 	String query = "UPDATE users SET purse=purse+" + amount + " WHERE user_id=" + user.getId() + ";";
 	try {

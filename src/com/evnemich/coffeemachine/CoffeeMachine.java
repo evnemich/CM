@@ -3,14 +3,17 @@ package com.evnemich.coffeemachine;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.evnemich.coffeemachine.models.*;
+import com.evnemich.coffeemachine.models.Buyable;
+import com.evnemich.coffeemachine.models.Drink;
+import com.evnemich.coffeemachine.models.Ingredient;
+import com.evnemich.coffeemachine.models.User;
 
 public class CoffeeMachine {
 
     public static ArrayList<Drink> drinks = new ArrayList<Drink>();
     public static ArrayList<Ingredient> ingredients = new ArrayList<Ingredient>();
 
-    public User logIn(String login, String password) throws SQLException {
+    public User logIn(String login, String password) throws SQLException, ClassNotFoundException {
 	DataBase.getData();
 	return DataBase.logIn(login, password);
     }
@@ -20,7 +23,7 @@ public class CoffeeMachine {
 
     }
 
-    public User register(String login, String password) throws SQLException {
+    public User register(String login, String password) throws SQLException, ClassNotFoundException {
 	return DataBase.register(login, password);
     }
 
@@ -71,10 +74,10 @@ public class CoffeeMachine {
 	return true;
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
 	// *
 	String login = "evnemich";
-	String password = "p@ssw0rd";
+	String password = "p@ssw0r";
 	String name = "latte";
 	CoffeeMachine cm = new CoffeeMachine();
 	Drink latte = new Drink(name);

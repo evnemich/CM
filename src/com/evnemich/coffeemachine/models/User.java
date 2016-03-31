@@ -7,10 +7,11 @@ import com.evnemich.coffeemachine.DataBase;
 
 public class User {
 
-    private int id;
+    private final int id;
     public final boolean admin;
     private Connection con;
     public User(int id) {
+	this.id = 0;
 	admin = false;
 	// Empty constructor to make useless instance
     }
