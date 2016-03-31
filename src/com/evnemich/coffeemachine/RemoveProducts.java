@@ -13,16 +13,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class SetPrices
+ * Servlet implementation class RemoveProducts
  */
-@WebServlet("/SetPrices")
-public class SetPrices extends HttpServlet {
+@WebServlet("/RemoveProducts")
+public class RemoveProducts extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SetPrices() {
+    public RemoveProducts() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -42,9 +42,9 @@ public class SetPrices extends HttpServlet {
 	do {
 	    name = products.nextElement();
 	    try {
-		int i = Integer.parseInt((String) request.getAttribute(name));
-		if (!CoffeeMachine.setPrice(user, name, i))
-		    response.sendRedirect("failed.jsp");
+		if ((boolean) request.getAttribute(name))
+		    if (!CoffeeMachine.removeProduct(user, name))
+			response.sendRedirect("failed.jsp");
 	    } catch (NumberFormatException e) {
 		e.printStackTrace();
 	    }

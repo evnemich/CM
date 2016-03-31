@@ -109,9 +109,9 @@ public class DataBase {
 	return amount;
     }
 
-    public static void addProduct(User user, String product, int amount) throws SQLException {
+    public static boolean addProduct(User user, String product, int amount) throws SQLException {
 	if (!user.admin || user.getId() == 0)
-	    return;
+	    return false;
 	Statement stmt;
 	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product + "';";
 	try {
@@ -121,12 +121,13 @@ public class DataBase {
 	} catch (SQLException se) {
 	    // So bad
 	}
+	return true;
     }
 
-    public static void removeProduct(User user, String product, boolean drink) {
+    public static boolean removeProduct(User user, String product) {
 
 	if (!user.admin || user.getId() == 0)
-	    return;
+	    return false;
 	Statement stmt;
 	String query = "DELETE FROM products" + " WHERE name='" + product + "';";
 	try {
@@ -136,12 +137,13 @@ public class DataBase {
 	} catch (SQLException se) {
 	    // So bad
 	}
+	return true;
     }
 
-    public static void addNewProduct(User user, String product, boolean drink) {
+    public static boolean addNewProduct(User user, String product, boolean drink) {
 
 	if (!user.admin || user.getId() == 0)
-	    return;
+	    return false;
 	Statement stmt;
 	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product + "'," + drink + ");";
 	try {
@@ -151,6 +153,7 @@ public class DataBase {
 	} catch (SQLException se) {
 	    // So bad
 	}
+	return true;
     }
 
     public static boolean buyProduct(User user, String product, int amount) {

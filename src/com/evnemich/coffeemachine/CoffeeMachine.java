@@ -26,14 +26,11 @@ public class CoffeeMachine {
     }
 
     public static boolean buy(User user, String product, int amount) throws SQLException {
-	Buyable.buy(user, product, amount); // NO MONEY // NO PRODUCT
-	return true;
+	return Buyable.buy(user, product, amount);
     }
 
-    public static void addNewProduct(User admin, String product, boolean drink) {
-	if (!admin.admin)
-	    return;
-	DataBase.addNewProduct(admin, product, drink);
+    public static boolean addNewProduct(User admin, String product, boolean drink) {
+	return DataBase.addNewProduct(admin, product, drink);
     }
 
     public static void addMoney(User user, double amount) {
@@ -41,8 +38,11 @@ public class CoffeeMachine {
     }
 
     public static boolean setPrice(User admin, String product, double price) {
-	DataBase.setPrice(admin, product, price); // MAY RETURN FALSE
-	return true;
+	return DataBase.setPrice(admin, product, price);
+    }
+
+    public static boolean removeProduct(User admin, String product) {
+	return DataBase.removeProduct(admin, product);
     }
 
 }

@@ -37,18 +37,19 @@ public class AddProducts extends HttpServlet {
 	String name;
 	User user = (User) session.getAttribute("currentSessionUser");
 
+	response.sendRedirect("done.jsp");
 	Enumeration<String> products = request.getAttributeNames();
 	do {
 	    name = products.nextElement();
 	    try {
-		CoffeeMachine.addNewProduct(user, name, (boolean) request.getAttribute(name));
+		if (!CoffeeMachine.addNewProduct(user, name, (boolean) request.getAttribute(name)))
+		    response.sendRedirect("failed.jsp");
 	    } catch (NumberFormatException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
 	} while (products.hasMoreElements());
 
-	response.sendRedirect("ingredientsAdded.jsp");
     }
 
     /**

@@ -4,11 +4,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Login successful</title>
+<title>Insert title here</title>
 </head>
 <body>
-    <%@ include file="navBar.jsp"%>
-	You are welcome!<br>
-	<button onclick="drink.jsp">Use coffee-machine</button>
+	<%@ include file="navBar.jsp"%>
+	Something goes wrong, operation aborted!
 </body>
 </html>

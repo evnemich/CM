@@ -19,7 +19,10 @@ String name;
 	<a href="login.jsp">Login</a>
 	<a href="register.jsp">Register</a> 
     <a href="LogOut">Logout</a>
-    <a href="drink.jsp">Logout</a>
+    <a href="drink.jsp">Buy drinks</a>
+    <a href="addProduct.jsp">Add products</a>
+    <a href="setPrices.jsp">Set prices</a>
+    <a href="removeProducts.jsp">Remove products</a>
     
 	<br>
 </body>

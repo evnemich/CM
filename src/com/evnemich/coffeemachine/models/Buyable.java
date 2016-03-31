@@ -14,8 +14,8 @@ public class Buyable {
 	return DataBase.setPrice(admin, name, price);
     }
 
-    public static void add(User admin, String name, int amount) throws SQLException {
-	DataBase.addProduct(admin, name, amount);
+    public static boolean add(User admin, String name, int amount) throws SQLException {
+	return DataBase.addProduct(admin, name, amount);
     }
 
     public static int getAmount(User user, String name) throws SQLException {
@@ -27,7 +27,6 @@ public class Buyable {
 	    return false;
 	if (DataBase.buyProduct(user, name, amount))
 	    user.pay(Buyable.getPrice(user, name));
-
 	return true;
     }
 }
