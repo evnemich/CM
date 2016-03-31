@@ -33,7 +33,6 @@ public class LogInServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	try {
-
 	    User user = DataBase.logIn(request.getParameter("login"), request.getParameter("password"));
 
 	    if (user.getId() != 0) {

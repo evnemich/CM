@@ -6,9 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.evnemich.coffeemachine.models.Buyable;
-import com.evnemich.coffeemachine.models.Drink;
-import com.evnemich.coffeemachine.models.Ingredient;
 import com.evnemich.coffeemachine.models.User;
 
 public class DataBase {
@@ -80,9 +77,9 @@ public class DataBase {
 	rs = stmt.executeQuery(query);
 	while (rs.next()) {
 	    if (rs.getBoolean(2) == true)
-		CoffeeMachine.drinks.add(new Drink(rs.getString(1)));
+		CoffeeMachine.drinks.add(rs.getString(1));
 	    else
-		CoffeeMachine.ingredients.add(new Ingredient(rs.getString(1)));
+		CoffeeMachine.ingredients.add(rs.getString(1));
 	}
 
 	rs.close();
@@ -90,14 +87,14 @@ public class DataBase {
 	con.close();
     }
 
-    public static int askAmount(User user, Buyable product) throws SQLException {
+    public static int askAmount(User user, String product) throws SQLException {
 	// TODO
 	if (user.getId() == 0)
 	    return 0;
 	int amount = 0;
 	Statement stmt;
 	ResultSet rs;
-	String query = "SELECT amount FROM products WHERE name='" + product.getName() + "';";
+	String query = "SELECT amount FROM products WHERE name='" + product + "';";
 
 	try {
 	    stmt = user.getConnection().createStatement();
@@ -112,11 +109,11 @@ public class DataBase {
 	return amount;
     }
 
-    public static void addProduct(User user, Buyable product, int amount) throws SQLException {
+    public static void addProduct(User user, String product, int amount) throws SQLException {
 	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
-	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product.getName() + "';";
+	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    stmt.executeUpdate(query);
@@ -126,12 +123,12 @@ public class DataBase {
 	}
     }
 
-    public static void removeProduct(User user, Buyable product, boolean drink) {
+    public static void removeProduct(User user, String product, boolean drink) {
 
 	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
-	String query = "DELETE FROM products" + " WHERE name='" + product.getName() + "';";
+	String query = "DELETE FROM products" + " WHERE name='" + product + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    stmt.executeUpdate(query);
@@ -141,12 +138,12 @@ public class DataBase {
 	}
     }
 
-    public static void addNewProduct(User user, Buyable product, boolean drink) {
+    public static void addNewProduct(User user, String product, boolean drink) {
 
 	if (!user.admin || user.getId() == 0)
 	    return;
 	Statement stmt;
-	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product.getName() + "'," + drink + ");";
+	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product + "'," + drink + ");";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    stmt.executeUpdate(query);
@@ -156,12 +153,12 @@ public class DataBase {
 	}
     }
 
-    public static boolean buyProduct(User user, Buyable product, int amount) {
+    public static boolean buyProduct(User user, String product, int amount) {
 	// TODO
 	if (user.getId() == 0)
 	    return false;
 	Statement stmt;
-	String query = "UPDATE products" + " SET amount=amount-" + amount + " WHERE name='" + product.getName() + "';";
+	String query = "UPDATE products" + " SET amount=amount-" + amount + " WHERE name='" + product + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    stmt.executeUpdate(query);
@@ -173,14 +170,14 @@ public class DataBase {
 	}
     }
 
-    public static double askPrice(User user, Buyable product) {
+    public static double askPrice(User user, String product) {
 	// TODO
 	if (user.getId() == 0)
 	    return 0;
 	double price = 0;
 	ResultSet rs;
 	Statement stmt;
-	String query = "SELECT price FROM products" + " WHERE name='" + product.getName() + "';";
+	String query = "SELECT price FROM products" + " WHERE name='" + product + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    rs = stmt.executeQuery(query);
@@ -194,12 +191,12 @@ public class DataBase {
 	return price;
     }
 
-    public static boolean setPrice(User user, Buyable product, double price) {
+    public static boolean setPrice(User user, String product, double price) {
 
 	if (!user.admin)
 	    return false;
 	Statement stmt;
-	String query = "UPDATE products SET price=" + price + " WHERE name='" + product.getName() + "';";
+	String query = "UPDATE products SET price=" + price + " WHERE name='" + product + "';";
 	try {
 	    stmt = user.getConnection().createStatement();
 	    stmt.executeUpdate(query);
