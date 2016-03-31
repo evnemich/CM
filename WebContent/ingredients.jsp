@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+	pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,20 +7,21 @@
 <title>Choose ingredients to your drink</title>
 </head>
 <body>
-U can buy drinks here
-<form action="BuyDrink">
-        <table>
-            <tr>
-                <td>Ingr name</td>
-                <td><input type="text" name="ingr1" value = '0' /><br></td>
-            </tr>
+	<%@ include file="navBar.jsp"%>
+	U can buy drinks here
+	<form action="BuyDrink">
+		<table>
+			<tr>
+				<td>Ingr name</td>
+				<td><input type="text" name="ingr1" value='0' /><br></td>
+			</tr>
 
-            <tr>
-                <td> </td>
-                <td><input type="submit" value="Buy"></td>
-            </tr>
-        </table>
-    </form>
+			<tr>
+				<td></td>
+				<td><input type="submit" value="Buy"></td>
+			</tr>
+		</table>
+	</form>
 </body>
 </body>
 </html>

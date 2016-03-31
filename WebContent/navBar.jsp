@@ -9,7 +9,7 @@
 <body>
 <% 
 String name;
-	if (session.isNew() || ((String) session.getAttribute("status")).equals("GUEST"))
+	if (session.isNew() || ((String) session.getAttribute("status")).equals("Guest"))
 		name = " ";
 	else
 		name = (String) session.getAttribute("currentSessionUserName");
