@@ -13,16 +13,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class RemoveProducts
+ * Servlet implementation class SetPrices
  */
-@WebServlet("/RemoveProducts")
-public class RemoveProducts extends HttpServlet {
+@WebServlet("/SetPrices")
+public class SetPricesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public RemoveProducts() {
+    public SetPricesServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -35,20 +35,28 @@ public class RemoveProducts extends HttpServlet {
 	    throws ServletException, IOException {
 	HttpSession session = request.getSession(true);
 	String name;
-	User user = (User) session.getAttribute("currentSessionUser");
+	Object o = session.getAttribute("currentSessionUser");
+	User user;
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	}
+	user = (User) o;
 
-	response.sendRedirect("done.jsp");
 	Enumeration<String> products = request.getAttributeNames();
 	do {
 	    name = products.nextElement();
 	    try {
-		if ((boolean) request.getAttribute(name))
-		    if (!CoffeeMachine.removeProduct(user, name))
-			response.sendRedirect("failed.jsp");
+		int i = Integer.parseInt((String) request.getParameter(name));
+		if (!CoffeeMachine.setPrice(user, name, i)) {
+		    response.sendRedirect("failed.jsp");
+		    return;
+		}
 	    } catch (NumberFormatException e) {
 		e.printStackTrace();
 	    }
 	} while (products.hasMoreElements());
+	response.sendRedirect("done.jsp");
 
     }
 

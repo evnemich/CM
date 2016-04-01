@@ -9,11 +9,11 @@
 <body>
 	<%@ include file="navBar.jsp"%>
 	U can buy drinks here
-	<form action="BuyDrink">
+	<form action="BuyIngredients">
 		<table>
 			<tr>
-				<td>Ingr name</td>
-				<td><input type="text" name="ingr1" value='0' /><br></td>
+				<td>sugar</td>
+				<td><input type="text" name="sugar" value='0' /><br></td>
 			</tr>
 
 			<tr>

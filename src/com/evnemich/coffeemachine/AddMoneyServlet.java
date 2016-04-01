@@ -1,7 +1,6 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,16 +12,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class AddProducts
+ * Servlet implementation class AddMoney
  */
-@WebServlet("/AddProducts")
-public class AddProducts extends HttpServlet {
+@WebServlet("/AddMoney")
+public class AddMoneyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AddProducts() {
+    public AddMoneyServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -34,22 +33,22 @@ public class AddProducts extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	HttpSession session = request.getSession(true);
-	String name;
-	User user = (User) session.getAttribute("currentSessionUser");
+	Object o = session.getAttribute("currentSessionUser");
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    System.out.println("NO USER");
+	    return;
+	}
+	User user = (User) o;
 
-	response.sendRedirect("done.jsp");
-	Enumeration<String> products = request.getAttributeNames();
-	do {
-	    name = products.nextElement();
-	    try {
-		if (!CoffeeMachine.addNewProduct(user, name, (boolean) request.getAttribute(name)))
-		    response.sendRedirect("failed.jsp");
-	    } catch (NumberFormatException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-	} while (products.hasMoreElements());
-
+	double amount = (double) Double.parseDouble((String) request.getParameter("addCash"));
+	if (user.addMoney(amount)) {
+	    response.sendRedirect("done.jsp");
+	} else {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	}
+	session.setAttribute("balance", user.getMoney());
     }
 
     /**

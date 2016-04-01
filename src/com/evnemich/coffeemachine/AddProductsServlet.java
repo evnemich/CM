@@ -10,17 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.models.User;
+
 /**
- * Servlet implementation class BuyDrink
+ * Servlet implementation class AddProducts
  */
-@WebServlet("/BuyDrink")
-public class BuyDrink extends HttpServlet {
+@WebServlet("/AddProducts")
+public class AddProductsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BuyDrink() {
+    public AddProductsServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -31,16 +33,33 @@ public class BuyDrink extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
-	String name;
 	HttpSession session = request.getSession(true);
-	Enumeration<String> names = request.getAttributeNames();
+	String name;
+	User user;
+	Object o = session.getAttribute("currentSessionUser");
+
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	} else {
+	    user = (User) o;
+	}
+
+	Enumeration<String> products = request.getParameterNames();
 	do {
-	    name = names.nextElement();
-	    if ((boolean) request.getAttribute(name) == true)
-		session.setAttribute(name, 1);
-	} while (names.hasMoreElements());
-	response.sendRedirect("ingredients.jsp");
+	    name = products.nextElement();
+	    try {
+		if (!CoffeeMachine.addNewProduct(user, name, Boolean.getBoolean(request.getParameter(name)))) {
+		    response.sendRedirect("failed.jsp");
+		    return;
+		}
+	    } catch (NumberFormatException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	} while (products.hasMoreElements());
+	response.sendRedirect("done.jsp");
+
     }
 
     /**

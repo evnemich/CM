@@ -4,10 +4,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Operation failed</title>
+<title>Adding money</title>
 </head>
 <body>
 	<%@ include file="navBar.jsp"%>
-	Something goes wrong, operation aborted!
+	<form action="AddMoney">
+		<table>
+			<tr>
+				<td>Amount</td>
+				<td><input type="text" name="addCash" /><br></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><input type="submit" value="Add"></td>
+			</tr>
+		</table>
+	</form>
 </body>
 </html>

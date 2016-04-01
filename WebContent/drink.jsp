@@ -12,8 +12,8 @@
 	<form action="BuyDrink">
 		<table>
 			<tr>
-				<td>Drinkname</td>
-				<td><input type="checkbox" name="drink1" /><br></td>
+				<td>latte</td>
+				<td><input type="checkbox" name="latte" /><br></td>
 			</tr>
 
 			<tr>

@@ -1,6 +1,7 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,16 +13,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class LogIn
+ * Servlet implementation class LogOut
  */
-@WebServlet(urlPatterns = { "/LogIn" })
-public class LogInServlet extends HttpServlet {
+@WebServlet("/LogOut")
+public class LogOutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LogInServlet() {
+    public LogOutServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -32,23 +33,22 @@ public class LogInServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	try {
-	    User user = DataBase.logIn(request.getParameter("login"), request.getParameter("password"));
+	// TODO Auto-generated method stub
+	HttpSession session = request.getSession(true);
+	Object o = session.getAttribute("status");
+	if (o != null && ((String) o).equals("Logged in"))
+	    try {
+		User user = (User) session.getAttribute("currentSessionUser");
+		user.closeConnection();
+		session.removeAttribute("currentSessionUser");
+		session.removeAttribute("currentSessionUserName");
+	    } catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	    }
+	session.setAttribute("status", "Guest");
+	response.sendRedirect("login.jsp");
 
-	    if (user.getId() != 0) {
-
-		HttpSession session = request.getSession(true);
-		session.setAttribute("currentSessionUser", user);
-		session.setAttribute("balance", user.getMoney());
-		session.setAttribute("status", "Logged in");
-		session.setAttribute("currentSessionUserName", request.getParameter("login"));
-		response.sendRedirect("loginSuccessful.jsp");
-	    } else
-		response.sendRedirect("loginFailed.jsp");
-	}
-
-	catch (Throwable theException) {
-	}
     }
 
     /**

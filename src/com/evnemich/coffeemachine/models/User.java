@@ -10,6 +10,7 @@ public class User {
     private final int id;
     public final boolean admin;
     private Connection con;
+
     public User(int id) {
 	this.id = 0;
 	admin = false;
@@ -43,6 +44,8 @@ public class User {
     }
 
     public boolean pay(double amount) {
+	if (this.getMoney() < amount)
+	    return false;
 	return DataBase.pay(this, amount);
 
     }

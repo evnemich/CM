@@ -10,19 +10,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.evnemich.coffeemachine.models.User;
-
 /**
- * Servlet implementation class SetPrices
+ * Servlet implementation class BuyDrink
  */
-@WebServlet("/SetPrices")
-public class SetPrices extends HttpServlet {
+@WebServlet("/BuyDrink")
+public class BuyDrinkServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SetPrices() {
+    public BuyDrinkServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -33,23 +31,20 @@ public class SetPrices extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	HttpSession session = request.getSession(true);
+	// TODO Auto-generated method stub
 	String name;
-	User user = (User) session.getAttribute("currentSessionUser");
-
-	response.sendRedirect("done.jsp");
-	Enumeration<String> products = request.getAttributeNames();
-	do {
-	    name = products.nextElement();
-	    try {
-		int i = Integer.parseInt((String) request.getAttribute(name));
-		if (!CoffeeMachine.setPrice(user, name, i))
-		    response.sendRedirect("failed.jsp");
-	    } catch (NumberFormatException e) {
-		e.printStackTrace();
+	HttpSession session = request.getSession(true);
+	Enumeration<String> names = request.getParameterNames();
+	while (names.hasMoreElements()) {
+	    name = names.nextElement();
+	    System.out.println("Checked " + name);
+	    System.out.println(" value  " + ((String) request.getParameter(name)));
+	    if (((String) request.getParameter(name)).equals("on")) {
+		System.out.println("Added " + name);
+		session.setAttribute(name, 1);
 	    }
-	} while (products.hasMoreElements());
-
+	}
+	response.sendRedirect("ingredients.jsp");
     }
 
     /**

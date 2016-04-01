@@ -17,13 +17,13 @@ import com.evnemich.coffeemachine.models.User;
  * Servlet implementation class BuyIngredients
  */
 @WebServlet("/BuyIngredients")
-public class BuyIngredients extends HttpServlet {
+public class BuyIngredientsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BuyIngredients() {
+    public BuyIngredientsServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -36,53 +36,77 @@ public class BuyIngredients extends HttpServlet {
 	    throws ServletException, IOException {
 	// TODO Auto-generated method stub
 	String name;
+	Object o;
 	boolean del = false;
 	HttpSession session = request.getSession(true);
-	User user = (User) session.getAttribute("currentSessionUser");
-	String username = (String) session.getAttribute("currentSessionUser");
+	User user;
+	String username;
+	o = session.getAttribute("currentSessionUser");
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	}
+	user = (User) o;
+	o = session.getAttribute("currentSessionUserName");
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	}
+	username = (String) o;
+	o = session.getAttribute("balance");
 	session.removeAttribute("currentSessionUser");
-	session.removeAttribute("currentSessionUsername");
+	session.removeAttribute("currentSessionUserName");
+	session.removeAttribute("balance");
 	session.removeAttribute("status");
 
 	Enumeration<String> drinks = session.getAttributeNames();
 
-	do {
+	while (drinks.hasMoreElements()) {
 	    name = drinks.nextElement();
 	    try {
 		if (!CoffeeMachine.buy(user, name, 1))
 		    del = true;
+		else
+		    session.removeAttribute(name);
 	    } catch (SQLException e) {
 		// TODO Auto-generated catch block
+		System.out.println("EX");
 		e.printStackTrace();
 	    }
 	    if (del)
 		session.removeAttribute(name);
 
-	} while (drinks.hasMoreElements());
-
-	session.setAttribute("currentSessionUser", user);
-	session.setAttribute("currentSessionUserName", username);
-	session.setAttribute("status", "Logged in");
-
-	if (del) {
-	    response.sendRedirect("ingredients.jsp");
-	    return;
 	}
 
-	Enumeration<String> ingredients = request.getAttributeNames();
-	do {
+	Enumeration<String> ingredients = request.getParameterNames();
+	while (!del && ingredients.hasMoreElements()) {
 	    name = ingredients.nextElement();
 	    try {
-		int i = Integer.parseInt((String) request.getAttribute(name));
-		if (CoffeeMachine.buy(user, name, i))
-		    session.setAttribute(name, i);
+		int i = Integer.parseInt((String) request.getParameter(name));
+		if (i != 0)
+		    if (CoffeeMachine.buy(user, name, i)) {
+			session.setAttribute(name, i);
+		    } else
+			del = true;
 	    } catch (NumberFormatException | SQLException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
-	} while (ingredients.hasMoreElements());
-
-	response.sendRedirect("ingredients.jsp");
+	}
+	if (del)
+	    response.sendRedirect("partlyDone.jsp");
+	else {
+	    drinks = session.getAttributeNames();
+	    while (drinks.hasMoreElements()) {
+		name = drinks.nextElement();
+		session.removeAttribute(name);
+	    }
+	    response.sendRedirect("done.jsp");
+	}
+	session.setAttribute("currentSessionUser", user);
+	session.setAttribute("currentSessionUserName", username);
+	session.setAttribute("status", "Logged in");
+	session.setAttribute("balance", user.getMoney());
     }
 
     /**

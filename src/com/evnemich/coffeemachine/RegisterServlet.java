@@ -1,7 +1,6 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,16 +12,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class LogOut
+ * Servlet implementation class Register
  */
-@WebServlet("/LogOut")
-public class LogOut extends HttpServlet {
+@WebServlet("/Register")
+public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LogOut() {
+    public RegisterServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -34,20 +33,22 @@ public class LogOut extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	// TODO Auto-generated method stub
-	HttpSession session = request.getSession(true);
-	if (((String) session.getAttribute("status")).equals("Logged in"))
-	    try {
-		User user = (User) session.getAttribute("currentSessionUser");
-		user.closeConnection();
-		session.removeAttribute("currentSessionUser");
-		session.removeAttribute("currentSessionUserName");
-	    } catch (SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	    }
-	session.setAttribute("status", "Guest");
-	response.sendRedirect("login.jsp");
+	try {
 
+	    User user = DataBase.register(request.getParameter("login"), request.getParameter("password"));
+
+	    if (user.getId() != 0) {
+
+		HttpSession session = request.getSession(true);
+		session.setAttribute("currentSessionUser", user);
+		session.setAttribute("currentSessionUserName", request.getParameter("login"));
+		response.sendRedirect("loginSuccessful.jsp"); // logged-in page
+	    } else
+		response.sendRedirect("userAlreadyExist.jsp"); // error page
+	}
+
+	catch (Throwable theException) {
+	}
     }
 
     /**
