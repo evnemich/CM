@@ -1,6 +1,7 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -44,10 +45,10 @@ public class RemoveProductsServlet extends HttpServlet {
 	user = (User) o;
 
 	Enumeration<String> products = request.getParameterNames();
-	do {
+	while (products.hasMoreElements()) {
 	    name = products.nextElement();
 	    try {
-		if (!Boolean.getBoolean(request.getParameter(name)))
+		if (request.getParameter(name) != null)
 		    if (!CoffeeMachine.removeProduct(user, name)) {
 			response.sendRedirect("failed.jsp");
 			return;
@@ -55,8 +56,14 @@ public class RemoveProductsServlet extends HttpServlet {
 	    } catch (NumberFormatException e) {
 		e.printStackTrace();
 	    }
-	} while (products.hasMoreElements());
+	}
 	response.sendRedirect("done.jsp");
+	try {
+	    CoffeeMachine.updateData(user);
+	} catch (SQLException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
     }
 

@@ -27,6 +27,12 @@ public class User {
 	return id;
     }
 
+    public boolean isValid() {
+	if (id != 0)
+	    return true;
+	return false;
+    }
+
     public Connection getConnection() {
 	return con;
     }

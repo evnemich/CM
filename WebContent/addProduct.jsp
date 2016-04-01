@@ -8,7 +8,7 @@
 </head>
 <body>
 <%@ include file="navBar.jsp"%>
-    <form action="AddProducts">
+    <form action="AddProduct">
         <table>
             <tr>
                 <td>Product name</td>
@@ -16,8 +16,8 @@
             </tr>
 
             <tr>
-                <td>Amount of product</td>
-                <td><input type="text" name="amount" /><br></td>
+                <td>Drink</td>
+                <td><input type="checkbox" name="drink" /><br></td>
             </tr>
             <tr>
                 <td> </td>

@@ -20,8 +20,8 @@
 				<td><input type="password" name="password" /><br></td>
 			</tr>
 			<tr>
-				<td><button formaction="register.jsp">register</button></td>
 				<td><input type="submit" value="login"></td>
+				<td><button formaction="register.jsp">register</button></td>
 			</tr>
 		</table>
 	</form>

@@ -33,16 +33,17 @@ public class LogInServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	try {
-	    User user = DataBase.logIn(request.getParameter("login"), request.getParameter("password"));
+	    User user = CoffeeMachine.logIn(request.getParameter("login"), request.getParameter("password"));
 
-	    if (user.getId() != 0) {
-
+	    if (user.isValid()) {
+		System.out.println("UPD");
+		CoffeeMachine.updateData(user);
+		System.out.println("UPD");
 		HttpSession session = request.getSession(true);
 		session.setAttribute("currentSessionUser", user);
 		session.setAttribute("balance", user.getMoney());
-		session.setAttribute("status", "Logged in");
 		session.setAttribute("currentSessionUserName", request.getParameter("login"));
-		response.sendRedirect("loginSuccessful.jsp");
+		response.sendRedirect("done.jsp");
 	    } else
 		response.sendRedirect("loginFailed.jsp");
 	}

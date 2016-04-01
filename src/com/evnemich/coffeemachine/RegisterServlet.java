@@ -1,6 +1,7 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,22 +33,21 @@ public class RegisterServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
+
+	User user = null;
 	try {
-
-	    User user = DataBase.register(request.getParameter("login"), request.getParameter("password"));
-
-	    if (user.getId() != 0) {
+	    user = DataBase.register(request.getParameter("login"), request.getParameter("password"));
+	    if (user.isValid()) {
 
 		HttpSession session = request.getSession(true);
 		session.setAttribute("currentSessionUser", user);
+		session.setAttribute("balance", 0.0);
 		session.setAttribute("currentSessionUserName", request.getParameter("login"));
-		response.sendRedirect("loginSuccessful.jsp"); // logged-in page
+		response.sendRedirect("done.jsp"); // logged-in page
 	    } else
-		response.sendRedirect("userAlreadyExist.jsp"); // error page
-	}
-
-	catch (Throwable theException) {
+		response.sendRedirect("userAlreadyExist.jsp"); // error page();
+	} catch (ClassNotFoundException | SQLException e) {
+	    e.printStackTrace();
 	}
     }
 

@@ -34,6 +34,7 @@ public class DataBase {
 	    return user;
 	}
 	User user = new User(rs.getInt(1), con, rs.getBoolean(2));
+	System.out.println(rs.getInt(1));
 
 	rs.close();
 	stmt.close();
@@ -42,7 +43,7 @@ public class DataBase {
     }
 
     public static User register(String login, String password) throws SQLException, ClassNotFoundException {
-
+	Class.forName("com.mysql.jdbc.Driver");
 	Connection con;
 	Statement stmt;
 	String query = "INSERT INTO users (login, password) VALUES ('" + login + "','" + password + "');";
@@ -61,20 +62,22 @@ public class DataBase {
     }
 
     public static void logOut(User user) throws SQLException {
-	user.getConnection().close();
+	if (user != null && user.isValid() && !user.getConnection().isClosed())
+	    user.getConnection().close();
     }
 
-    public static void getData() throws SQLException {
+    public static void getData(User user) throws SQLException {
 
 	Connection con;
 	Statement stmt;
 	ResultSet rs;
-	String query = "SELECT name, drink FROM products ORDER BY time;";
-
-	con = DriverManager.getConnection(DataBase.url, DataBase.user, DataBase.password);
-
+	String query = "SELECT name, drink FROM products WHERE amount<>0 ORDER BY time;";
+	System.out.println("INS");
+	con = user.getConnection();
 	stmt = con.createStatement();
 	rs = stmt.executeQuery(query);
+
+	System.out.println("INS");
 	while (rs.next()) {
 	    if (rs.getBoolean(2) == true)
 		CoffeeMachine.drinks.add(rs.getString(1));
@@ -82,14 +85,20 @@ public class DataBase {
 		CoffeeMachine.ingredients.add(rs.getString(1));
 	}
 
-	rs.close();
+	query = "SELECT name,price FROM products ORDER BY time;";
+	rs = stmt.executeQuery(query);
+	while (rs.next()) {
+	    System.out.println(rs.getString(1));
+	    CoffeeMachine.products.add(rs.getString(1));
+	    CoffeeMachine.price.put(rs.getString(1), rs.getDouble(2));
+	}
+
 	stmt.close();
-	con.close();
     }
 
     public static int askAmount(User user, String product) throws SQLException {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return 0;
 	int amount = 0;
 	Statement stmt;
@@ -110,7 +119,7 @@ public class DataBase {
     }
 
     public static boolean addProduct(User user, String product, int amount) throws SQLException {
-	if (!user.admin || user.getId() == 0)
+	if (!user.isValid() || !user.admin)
 	    return false;
 	Statement stmt;
 	String query = "UPDATE products SET amount=amount+" + amount + " WHERE name='" + product + "';";
@@ -126,7 +135,7 @@ public class DataBase {
 
     public static boolean removeProduct(User user, String product) {
 
-	if (!user.admin || user.getId() == 0)
+	if (!user.admin || !user.isValid())
 	    return false;
 	Statement stmt;
 	String query = "DELETE FROM products" + " WHERE name='" + product + "';";
@@ -142,7 +151,7 @@ public class DataBase {
 
     public static boolean addNewProduct(User user, String product, boolean drink) {
 
-	if (!user.admin || user.getId() == 0)
+	if (!user.admin || !user.isValid())
 	    return false;
 	Statement stmt;
 	String query = "INSERT INTO products (name, drink)" + "VALUES ('" + product + "'," + drink + ");";
@@ -158,7 +167,7 @@ public class DataBase {
 
     public static boolean buyProduct(User user, String product, int amount) {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return false;
 	Statement stmt;
 	String query = "UPDATE products" + " SET amount=amount-" + amount + " WHERE name='" + product + "';";
@@ -175,7 +184,7 @@ public class DataBase {
 
     public static double askPrice(User user, String product) {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return 0;
 	double price = 0;
 	ResultSet rs;
@@ -213,7 +222,7 @@ public class DataBase {
 
     public static double getMoney(User user) {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return 0;
 	double purse = 0;
 	ResultSet rs;
@@ -234,7 +243,7 @@ public class DataBase {
 
     public static boolean pay(User user, double amount) {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return false;
 	Statement stmt;
 	String query = "UPDATE users SET purse=purse-" + amount + " WHERE user_id=" + user.getId() + ";";
@@ -251,7 +260,7 @@ public class DataBase {
 
     public static boolean addMoney(User user, double amount) {
 	// TODO
-	if (user.getId() == 0)
+	if (!user.isValid())
 	    return false;
 	Statement stmt;
 	String query = "UPDATE users SET purse=purse+" + amount + " WHERE user_id=" + user.getId() + ";";

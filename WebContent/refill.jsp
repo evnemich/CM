@@ -6,24 +6,25 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Removing products</title>
+<title>Write how much products to add</title>
 </head>
 <body>
-    <%@ include file="navBar.jsp"%>
+<%@ include file="navBar.jsp"%>
     <%
         pageContext.setAttribute("products", CoffeeMachine.products);
     %>
-    Check products to remove it from machine
-    <form action="RemoveProducts">
-        <table border="1">
+    Check drinks you want to buy
+    <form action="Refill">
+        <table>
             <c:forEach items="${products}" var="current">
                 <tr>
                     <td><c:out value="${current}" /></td>
-                    <td><input type="checkbox" name="${current}" /></td>
+                    <td><input type="text" name="${current}" value="0" /></td>
                 </tr>
             </c:forEach>
             <tr>
-                <td><input type="submit" value="Remove"></td>
+                <td></td>
+                <td><input type="submit" value="Refill machine"></td>
             </tr>
         </table>
     </form>

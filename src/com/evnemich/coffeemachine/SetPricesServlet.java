@@ -37,25 +37,28 @@ public class SetPricesServlet extends HttpServlet {
 	String name;
 	Object o = session.getAttribute("currentSessionUser");
 	User user;
+	int i;
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
 	user = (User) o;
 
-	Enumeration<String> products = request.getAttributeNames();
-	do {
+	Enumeration<String> products = request.getParameterNames();
+	while (products.hasMoreElements()) {
 	    name = products.nextElement();
 	    try {
-		int i = Integer.parseInt((String) request.getParameter(name));
+		i = Integer.parseInt((String) request.getParameter(name));
+	    } catch (NumberFormatException e) {
+		response.sendRedirect("failed.jsp");
+		return;
+	    }
+	    if (i != 0)
 		if (!CoffeeMachine.setPrice(user, name, i)) {
 		    response.sendRedirect("failed.jsp");
 		    return;
 		}
-	    } catch (NumberFormatException e) {
-		e.printStackTrace();
-	    }
-	} while (products.hasMoreElements());
+	}
 	response.sendRedirect("done.jsp");
 
     }

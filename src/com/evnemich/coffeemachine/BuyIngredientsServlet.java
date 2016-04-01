@@ -34,7 +34,6 @@ public class BuyIngredientsServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
 	String name;
 	Object o;
 	boolean del = false;
@@ -47,35 +46,23 @@ public class BuyIngredientsServlet extends HttpServlet {
 	    return;
 	}
 	user = (User) o;
-	o = session.getAttribute("currentSessionUserName");
-	if (o == null) {
-	    response.sendRedirect("failed.jsp");
-	    return;
-	}
-	username = (String) o;
-	o = session.getAttribute("balance");
+	username = (String) session.getAttribute("currentSessionUserName");
 	session.removeAttribute("currentSessionUser");
 	session.removeAttribute("currentSessionUserName");
 	session.removeAttribute("balance");
-	session.removeAttribute("status");
 
 	Enumeration<String> drinks = session.getAttributeNames();
 
 	while (drinks.hasMoreElements()) {
 	    name = drinks.nextElement();
 	    try {
-		if (!CoffeeMachine.buy(user, name, 1))
+		if (!CoffeeMachine.buy(user, name, 1)) {
 		    del = true;
-		else
-		    session.removeAttribute(name);
-	    } catch (SQLException e) {
-		// TODO Auto-generated catch block
-		System.out.println("EX");
-		e.printStackTrace();
-	    }
-	    if (del)
+		}
 		session.removeAttribute(name);
+	    } catch (SQLException e) {
 
+	    }
 	}
 
 	Enumeration<String> ingredients = request.getParameterNames();
@@ -84,12 +71,12 @@ public class BuyIngredientsServlet extends HttpServlet {
 	    try {
 		int i = Integer.parseInt((String) request.getParameter(name));
 		if (i != 0)
-		    if (CoffeeMachine.buy(user, name, i)) {
-			session.setAttribute(name, i);
-		    } else
+		    if (CoffeeMachine.buy(user, name, i))
 			del = true;
-	    } catch (NumberFormatException | SQLException e) {
-		// TODO Auto-generated catch block
+	    } catch (NumberFormatException e) {
+		response.sendRedirect("failed.jsp");
+		return;
+	    } catch (SQLException e) {
 		e.printStackTrace();
 	    }
 	}
@@ -105,7 +92,6 @@ public class BuyIngredientsServlet extends HttpServlet {
 	}
 	session.setAttribute("currentSessionUser", user);
 	session.setAttribute("currentSessionUserName", username);
-	session.setAttribute("status", "Logged in");
 	session.setAttribute("balance", user.getMoney());
     }
 

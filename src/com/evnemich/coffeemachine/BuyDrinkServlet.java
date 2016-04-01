@@ -37,8 +37,6 @@ public class BuyDrinkServlet extends HttpServlet {
 	Enumeration<String> names = request.getParameterNames();
 	while (names.hasMoreElements()) {
 	    name = names.nextElement();
-	    System.out.println("Checked " + name);
-	    System.out.println(" value  " + ((String) request.getParameter(name)));
 	    if (((String) request.getParameter(name)).equals("on")) {
 		System.out.println("Added " + name);
 		session.setAttribute(name, 1);

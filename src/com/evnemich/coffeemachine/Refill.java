@@ -2,6 +2,7 @@ package com.evnemich.coffeemachine;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,16 +14,16 @@ import javax.servlet.http.HttpSession;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class LogOut
+ * Servlet implementation class Refill
  */
-@WebServlet("/LogOut")
-public class LogOutServlet extends HttpServlet {
+@WebServlet("/Refill")
+public class Refill extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LogOutServlet() {
+    public Refill() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -33,23 +34,49 @@ public class LogOutServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
+	String name;
+	Object o;
+	boolean error = false;
 	HttpSession session = request.getSession(true);
-	Object o = session.getAttribute("currentSessionUser");
-	if (o != null)
+	User user;
+	String username;
+	o = session.getAttribute("currentSessionUser");
+	if (o == null) {
+	    response.sendRedirect("failed.jsp");
+	    return;
+	}
+	user = (User) o;
+	username = (String) session.getAttribute("currentSessionUserName");
+	session.removeAttribute("currentSessionUser");
+	session.removeAttribute("currentSessionUserName");
+	session.removeAttribute("balance");
+
+	Enumeration<String> products = request.getParameterNames();
+
+	while (products.hasMoreElements()) {
+	    name = products.nextElement();
 	    try {
-		User user = (User) o;
-		CoffeeMachine.logOut(user);
-		session.removeAttribute("currentSessionUser");
-		session.removeAttribute("currentSessionUserName");
-		session.removeAttribute("balance");
+		if (!CoffeeMachine.addProduct(user, name, Integer.parseInt(request.getParameter(name))))
+		    error = true;
 	    } catch (SQLException e) {
 		// TODO Auto-generated catch block
+		System.out.println("EX");
 		e.printStackTrace();
 	    }
-	response.sendRedirect("logout.jsp");
-	session.invalidate();
+	}
 
+	if (error)
+	    response.sendRedirect("failed.jsp");
+	else
+	    response.sendRedirect("done.jsp");
+	session.setAttribute("currentSessionUser", user);
+	session.setAttribute("currentSessionUserName", username);
+	session.setAttribute("balance", user.getMoney());
+	try {
+	    CoffeeMachine.updateData(user);
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	}
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,14 +15,14 @@ import com.evnemich.coffeemachine.models.User;
 /**
  * Servlet implementation class AddProducts
  */
-@WebServlet("/AddProducts")
-public class AddProductsServlet extends HttpServlet {
+@WebServlet("/AddProduct")
+public class AddProductServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AddProductsServlet() {
+    public AddProductServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -34,8 +34,8 @@ public class AddProductsServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	HttpSession session = request.getSession(true);
-	String name;
 	User user;
+	boolean drink;
 	Object o = session.getAttribute("currentSessionUser");
 
 	if (o == null) {
@@ -45,20 +45,27 @@ public class AddProductsServlet extends HttpServlet {
 	    user = (User) o;
 	}
 
-	Enumeration<String> products = request.getParameterNames();
-	do {
-	    name = products.nextElement();
-	    try {
-		if (!CoffeeMachine.addNewProduct(user, name, Boolean.getBoolean(request.getParameter(name)))) {
-		    response.sendRedirect("failed.jsp");
-		    return;
-		}
-	    } catch (NumberFormatException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	o = request.getParameter("drink");
+	if (o == null)
+	    drink = false;
+	else
+	    drink = true;
+	try {
+	    if (!CoffeeMachine.addNewProduct(user, request.getParameter("name"), drink)) {
+		response.sendRedirect("failed.jsp");
+		return;
 	    }
-	} while (products.hasMoreElements());
+	} catch (NumberFormatException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 	response.sendRedirect("done.jsp");
+	try {
+	    CoffeeMachine.updateData(user);
+	} catch (SQLException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
     }
 

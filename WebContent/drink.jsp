@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ page import="com.evnemich.coffeemachine.CoffeeMachine"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -8,16 +10,26 @@
 </head>
 <body>
 	<%@ include file="navBar.jsp"%>
-	U can buy drinks here
+	<%
+		pageContext.setAttribute("drinks", CoffeeMachine.drinks);
+		pageContext.setAttribute("price", CoffeeMachine.price);
+	%>
+	Check drinks you want to buy
 	<form action="BuyDrink">
-		<table>
+		<table border="1" v>
 			<tr>
-				<td>latte</td>
-				<td><input type="checkbox" name="latte" /><br></td>
+				<td>Name</td>
+				<td>Price</td>
+				<td>Buy</td>
 			</tr>
-
+			<c:forEach items="${drinks}" var="current">
+				<tr>
+					<td><c:out value="${current}" /></td>
+					<td><c:out value="${price.get(current)}" /></td>
+					<td><input type="checkbox" name="${current}" /></td>
+				</tr>
+			</c:forEach>
 			<tr>
-				<td></td>
 				<td><input type="submit" value="Choose ingredients"></td>
 			</tr>
 		</table>
