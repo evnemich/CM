@@ -17,13 +17,13 @@ import com.evnemich.coffeemachine.models.User;
  * Servlet implementation class Refill
  */
 @WebServlet("/Refill")
-public class Refill extends HttpServlet {
+public class RefillServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Refill() {
+    public RefillServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }

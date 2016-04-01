@@ -12,7 +12,7 @@
 	<%
 	pageContext.setAttribute("bought", session.getAttributeNames());
 	%>
-	We have not bought all items
+	You have not bought all items
 	<c:forEach items="${bought}" var="current">
 	<c:if test="${!current.equals('balance') and !current.equals('currentSessionUserName') and !current.equals('currentSessionUser')}">
 		<tr>

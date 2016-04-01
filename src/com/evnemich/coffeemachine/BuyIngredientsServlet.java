@@ -71,7 +71,7 @@ public class BuyIngredientsServlet extends HttpServlet {
 	    try {
 		int i = Integer.parseInt((String) request.getParameter(name));
 		if (i != 0)
-		    if (CoffeeMachine.buy(user, name, i))
+		    if (!CoffeeMachine.buy(user, name, i))
 			del = true;
 	    } catch (NumberFormatException e) {
 		response.sendRedirect("failed.jsp");
@@ -83,11 +83,6 @@ public class BuyIngredientsServlet extends HttpServlet {
 	if (del)
 	    response.sendRedirect("partlyDone.jsp");
 	else {
-	    drinks = session.getAttributeNames();
-	    while (drinks.hasMoreElements()) {
-		name = drinks.nextElement();
-		session.removeAttribute(name);
-	    }
 	    response.sendRedirect("done.jsp");
 	}
 	session.setAttribute("currentSessionUser", user);

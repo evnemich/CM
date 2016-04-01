@@ -1,6 +1,7 @@
 package com.evnemich.coffeemachine;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -60,6 +61,12 @@ public class SetPricesServlet extends HttpServlet {
 		}
 	}
 	response.sendRedirect("done.jsp");
+	try {
+	    CoffeeMachine.updateData(user);
+	} catch (SQLException e) {
+	    // TODO Auto-generated catch block
+	    e.printStackTrace();
+	}
 
     }
 
