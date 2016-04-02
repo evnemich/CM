@@ -31,17 +31,19 @@ public class BuyDrinkServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
+
 	String name;
 	HttpSession session = request.getSession(true);
 	Enumeration<String> names = request.getParameterNames();
+
 	while (names.hasMoreElements()) {
 	    name = names.nextElement();
+
 	    if (((String) request.getParameter(name)).equals("on")) {
-		System.out.println("Added " + name);
 		session.setAttribute(name, 1);
 	    }
 	}
+
 	response.sendRedirect("ingredients.jsp");
     }
 

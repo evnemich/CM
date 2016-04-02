@@ -33,6 +33,7 @@ public class AddProductServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	HttpSession session = request.getSession(true);
 	User user;
 	boolean drink;
@@ -50,18 +51,14 @@ public class AddProductServlet extends HttpServlet {
 	    drink = false;
 	else
 	    drink = true;
-	try {
-	    if (!CoffeeMachine.addNewProduct(user, request.getParameter("name"), drink)) {
-		response.sendRedirect("failed.jsp");
-		return;
-	    }
-	} catch (NumberFormatException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+
+	if (!CoffeeMachine.addNewProduct(user, request.getParameter("name"), drink)) {
+	    response.sendRedirect("failed.jsp");
+	    return;
 	}
+
 	response.sendRedirect("done.jsp");
 	CoffeeMachine.updateData(user);
-
     }
 
     /**

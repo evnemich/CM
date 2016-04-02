@@ -35,19 +35,24 @@ public class RegisterServlet extends HttpServlet {
 	    throws ServletException, IOException {
 
 	User user = null;
+
 	try {
 	    user = DataBase.register(request.getParameter("login"), request.getParameter("password"));
-	    if (user.isValid()) {
 
+	    if (user.isValid()) {
 		HttpSession session = request.getSession(true);
 		session.setAttribute("currentSessionUser", user);
 		session.setAttribute("balance", 0.0);
 		session.setAttribute("currentSessionUserName", request.getParameter("login"));
+
 		response.sendRedirect("done.jsp"); // logged-in page
 	    } else
 		response.sendRedirect("userAlreadyExist.jsp"); // error page();
+
 	} catch (ClassNotFoundException e) {
-	    e.printStackTrace();
+
+	    System.err.println("ERROR can not register driver");
+
 	}
     }
 

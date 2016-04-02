@@ -33,23 +33,26 @@ public class LogInServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
+	User user;
 	try {
-	    User user = CoffeeMachine.logIn(request.getParameter("login"), request.getParameter("password"));
+	    user = CoffeeMachine.logIn(request.getParameter("login"), request.getParameter("password"));
 
 	    if (user.isValid()) {
-		System.out.println("UPD");
 		CoffeeMachine.updateData(user);
-		System.out.println("UPD");
+
 		HttpSession session = request.getSession(true);
 		session.setAttribute("currentSessionUser", user);
 		session.setAttribute("balance", user.getMoney());
 		session.setAttribute("currentSessionUserName", request.getParameter("login"));
+
 		response.sendRedirect("done.jsp");
+
 	    } else
 		response.sendRedirect("loginFailed.jsp");
-	}
 
-	catch (Throwable theException) {
+	} catch (ClassNotFoundException e) {
+	    System.err.println("LOGIN FAILED cfn't register driver");
 	}
     }
 

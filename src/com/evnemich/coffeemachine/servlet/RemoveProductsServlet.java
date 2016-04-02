@@ -34,32 +34,33 @@ public class RemoveProductsServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	HttpSession session = request.getSession(true);
 	String name;
 	Object o = session.getAttribute("currentSessionUser");
 	User user;
+
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
+
 	user = (User) o;
 
 	Enumeration<String> products = request.getParameterNames();
+
 	while (products.hasMoreElements()) {
 	    name = products.nextElement();
-	    try {
-		if (request.getParameter(name) != null)
-		    if (!CoffeeMachine.removeProduct(user, name)) {
-			response.sendRedirect("failed.jsp");
-			return;
-		    }
-	    } catch (NumberFormatException e) {
-		e.printStackTrace();
-	    }
+
+	    if (request.getParameter(name) != null)
+		if (!CoffeeMachine.removeProduct(user, name)) {
+		    response.sendRedirect("failed.jsp");
+		    return;
+		}
 	}
+
 	response.sendRedirect("done.jsp");
 	CoffeeMachine.updateData(user);
-
     }
 
     /**

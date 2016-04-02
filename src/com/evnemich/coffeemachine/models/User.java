@@ -47,6 +47,7 @@ public class User {
      *            indicator is it admin profile
      */
     public User(int id, Connection con, boolean admin) {
+
 	this.admin = admin;
 	this.id = id;
 	this.con = con;
@@ -58,6 +59,7 @@ public class User {
      * @return user_id
      */
     public int getId() {
+
 	return id;
     }
 
@@ -67,8 +69,10 @@ public class User {
      * @return true/false
      */
     public boolean isValid() {
+
 	if (id != 0)
 	    return true;
+
 	return false;
     }
 
@@ -78,6 +82,7 @@ public class User {
      * @return connection
      */
     public Connection getConnection() {
+
 	return con;
     }
 
@@ -86,9 +91,10 @@ public class User {
      * 
      * @param amount
      *            amount of money to add
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public boolean addMoney(double amount) {
+
 	return DataBase.addMoney(this, amount);
     }
 
@@ -98,6 +104,7 @@ public class User {
      * @return amount of money user have
      */
     public double getMoney() {
+
 	return DataBase.getMoney(this);
     }
 
@@ -106,12 +113,13 @@ public class User {
      * 
      * @param amount
      *            amount of money to pay
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public boolean pay(double amount) {
+
 	if (this.getMoney() < amount)
 	    return false;
-	return DataBase.pay(this, amount);
 
+	return DataBase.pay(this, amount);
     }
 }

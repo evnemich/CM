@@ -34,17 +34,21 @@ public class BuyIngredientsServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	String name;
 	Object o;
 	boolean del = false;
 	HttpSession session = request.getSession(true);
 	User user;
 	String username;
+
 	o = session.getAttribute("currentSessionUser");
+
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
+
 	user = (User) o;
 	username = (String) session.getAttribute("currentSessionUserName");
 	session.removeAttribute("currentSessionUser");
@@ -55,33 +59,34 @@ public class BuyIngredientsServlet extends HttpServlet {
 
 	while (drinks.hasMoreElements()) {
 	    name = drinks.nextElement();
+
 	    if (!CoffeeMachine.buy(user, name, 1)) {
 		del = true;
 		session.removeAttribute(name);
 	    }
-
-	    Enumeration<String> ingredients = request.getParameterNames();
-	    while (!del && ingredients.hasMoreElements()) {
-		name = ingredients.nextElement();
-		try {
-		    int i = Integer.parseInt((String) request.getParameter(name));
-		    if (i != 0)
-			if (!CoffeeMachine.buy(user, name, i))
-			    del = true;
-		} catch (NumberFormatException e) {
-		    response.sendRedirect("failed.jsp");
-		    return;
-		}
-	    }
-	    if (del)
-		response.sendRedirect("partlyDone.jsp");
-	    else {
-		response.sendRedirect("done.jsp");
-	    }
-	    session.setAttribute("currentSessionUser", user);
-	    session.setAttribute("currentSessionUserName", username);
-	    session.setAttribute("balance", user.getMoney());
 	}
+
+	Enumeration<String> ingredients = request.getParameterNames();
+
+	while (!del && ingredients.hasMoreElements()) {
+	    name = ingredients.nextElement();
+
+	    int i = Integer.parseInt((String) request.getParameter(name));
+
+	    if (i != 0)
+		if (!CoffeeMachine.buy(user, name, i))
+		    del = true;
+	}
+
+	if (del)
+	    response.sendRedirect("partlyDone.jsp");
+	else {
+	    response.sendRedirect("done.jsp");
+	}
+
+	session.setAttribute("currentSessionUser", user);
+	session.setAttribute("currentSessionUserName", username);
+	session.setAttribute("balance", user.getMoney());
     }
 
     /**

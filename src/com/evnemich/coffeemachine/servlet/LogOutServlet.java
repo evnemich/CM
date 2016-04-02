@@ -33,19 +33,22 @@ public class LogOutServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	// TODO Auto-generated method stub
+
 	HttpSession session = request.getSession(true);
 	Object o = session.getAttribute("currentSessionUser");
+
 	if (o != null) {
 	    User user = (User) o;
+
 	    CoffeeMachine.logOut(user);
+
 	    session.removeAttribute("currentSessionUser");
 	    session.removeAttribute("currentSessionUserName");
 	    session.removeAttribute("balance");
 	}
+
 	response.sendRedirect("logout.jsp");
 	session.invalidate();
-
     }
 
     /**

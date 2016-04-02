@@ -34,18 +34,23 @@ public class RefillServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	String name;
 	Object o;
 	boolean error = false;
 	HttpSession session = request.getSession(true);
 	User user;
 	String username;
+
 	o = session.getAttribute("currentSessionUser");
+
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
+
 	user = (User) o;
+
 	username = (String) session.getAttribute("currentSessionUserName");
 	session.removeAttribute("currentSessionUser");
 	session.removeAttribute("currentSessionUserName");
@@ -55,6 +60,7 @@ public class RefillServlet extends HttpServlet {
 
 	while (products.hasMoreElements()) {
 	    name = products.nextElement();
+
 	    if (!CoffeeMachine.addProduct(user, name, Integer.parseInt(request.getParameter(name))))
 		error = true;
 	}
@@ -63,9 +69,11 @@ public class RefillServlet extends HttpServlet {
 	    response.sendRedirect("failed.jsp");
 	else
 	    response.sendRedirect("done.jsp");
+
 	session.setAttribute("currentSessionUser", user);
 	session.setAttribute("currentSessionUserName", username);
 	session.setAttribute("balance", user.getMoney());
+
 	CoffeeMachine.updateData(user);
     }
 

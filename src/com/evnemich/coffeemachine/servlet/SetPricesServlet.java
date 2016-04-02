@@ -34,35 +34,41 @@ public class SetPricesServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	HttpSession session = request.getSession(true);
 	String name;
 	Object o = session.getAttribute("currentSessionUser");
 	User user;
 	int i;
+
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
+
 	user = (User) o;
 
 	Enumeration<String> products = request.getParameterNames();
+
 	while (products.hasMoreElements()) {
 	    name = products.nextElement();
+
 	    try {
 		i = Integer.parseInt((String) request.getParameter(name));
 	    } catch (NumberFormatException e) {
 		response.sendRedirect("failed.jsp");
 		return;
 	    }
+
 	    if (i != 0)
 		if (!CoffeeMachine.setPrice(user, name, i)) {
 		    response.sendRedirect("failed.jsp");
 		    return;
 		}
 	}
+
 	response.sendRedirect("done.jsp");
 	CoffeeMachine.updateData(user);
-
     }
 
     /**

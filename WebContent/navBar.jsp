@@ -15,6 +15,7 @@
 		String name;
 		double balance = 0;
 		Object o = session.getAttribute("currentSessionUser");
+		
 		if (o == null) {
 			guest = true;
 			name = "guest";

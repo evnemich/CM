@@ -59,11 +59,14 @@ public class CoffeeMachine {
      *            instance of User
      */
     public static void updateData(User user) {
+
 	if (user.isValid()) {
+
 	    drinks.clear();
 	    ingredients.clear();
 	    products.clear();
 	    price.clear();
+
 	    DataBase.getData(user);
 	}
     }
@@ -75,7 +78,9 @@ public class CoffeeMachine {
      *            instance of User
      */
     public static void logOut(User user) {
+
 	DataBase.logOut(user);
+
     }
 
     /**
@@ -90,8 +95,11 @@ public class CoffeeMachine {
      *             registering mysql driver may cause problems
      */
     public static User register(String login, String password) throws ClassNotFoundException {
+
 	User user = DataBase.register(login, password);
+
 	DataBase.getData(user);
+
 	return user;
     }
 
@@ -109,11 +117,15 @@ public class CoffeeMachine {
      *         have not enough product or user have not enough money
      */
     public static boolean buy(User user, String product, int amount) {
+
 	if (amount > DataBase.askAmount(user, product))
 	    return false;
+
 	if (user.pay(DataBase.askPrice(user, product) * amount))
 	    return DataBase.buyProduct(user, product, amount);
+
 	return false;
+
     }
 
     /**
@@ -129,7 +141,9 @@ public class CoffeeMachine {
      *         user is not administrator
      */
     public static boolean addNewProduct(User admin, String product, boolean drink) {
+
 	return DataBase.addNewProduct(admin, product, drink);
+
     }
 
     /**
@@ -141,10 +155,12 @@ public class CoffeeMachine {
      *            name of product
      * @param amount
      *            amount of product
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public static boolean addProduct(User admin, String product, int amount) {
+
 	return DataBase.addProduct(admin, product, amount);
+
     }
 
     /**
@@ -154,10 +170,12 @@ public class CoffeeMachine {
      *            valid user instance
      * @param amount
      *            amount of money to add
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public static boolean addMoney(User user, double amount) {
+
 	return user.addMoney(amount);
+
     }
 
     /**
@@ -169,10 +187,12 @@ public class CoffeeMachine {
      *            name of product
      * @param price
      *            new price
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public static boolean setPrice(User admin, String product, double price) {
+
 	return DataBase.setPrice(admin, product, price);
+
     }
 
     /**
@@ -185,7 +205,9 @@ public class CoffeeMachine {
      * @return amount of available products
      */
     public static int getAmount(User user, String product) {
+
 	return DataBase.askAmount(user, product);
+
     }
 
     /**
@@ -198,7 +220,9 @@ public class CoffeeMachine {
      * @return price of <code>product</code>
      */
     public static double getPrice(User user, String product) {
+
 	return DataBase.askPrice(user, product);
+
     }
 
     /**
@@ -208,10 +232,12 @@ public class CoffeeMachine {
      *            valid user instance with admin rights
      * @param product
      *            name of product
-     * @return boolean indicator if operation was succeed
+     * @return <code>boolean</code> indicator if operation was succeed
      */
     public static boolean removeProduct(User admin, String product) {
+
 	return DataBase.removeProduct(admin, product);
+
     }
 
 }

@@ -22,8 +22,8 @@ public class AddMoneyServlet extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public AddMoneyServlet() {
+
 	super();
-	// TODO Auto-generated constructor stub
     }
 
     /**
@@ -32,22 +32,30 @@ public class AddMoneyServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+
 	HttpSession session = request.getSession(true);
 	Object o = session.getAttribute("currentSessionUser");
+
 	if (o == null) {
 	    response.sendRedirect("failed.jsp");
 	    System.out.println("NO USER");
 	    return;
 	}
+
 	User user = (User) o;
 
 	double amount = (double) Double.parseDouble((String) request.getParameter("addCash"));
+
 	if (user.addMoney(amount)) {
+
 	    response.sendRedirect("done.jsp");
+
 	} else {
+
 	    response.sendRedirect("failed.jsp");
 	    return;
 	}
+
 	session.setAttribute("balance", user.getMoney());
     }
 
