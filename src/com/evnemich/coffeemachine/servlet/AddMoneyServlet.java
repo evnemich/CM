@@ -1,4 +1,4 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
 

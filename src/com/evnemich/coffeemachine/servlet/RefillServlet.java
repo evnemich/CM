@@ -1,7 +1,6 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.CoffeeMachine;
 import com.evnemich.coffeemachine.models.User;
 
 /**
@@ -55,14 +55,8 @@ public class RefillServlet extends HttpServlet {
 
 	while (products.hasMoreElements()) {
 	    name = products.nextElement();
-	    try {
-		if (!CoffeeMachine.addProduct(user, name, Integer.parseInt(request.getParameter(name))))
-		    error = true;
-	    } catch (SQLException e) {
-		// TODO Auto-generated catch block
-		System.out.println("EX");
-		e.printStackTrace();
-	    }
+	    if (!CoffeeMachine.addProduct(user, name, Integer.parseInt(request.getParameter(name))))
+		error = true;
 	}
 
 	if (error)
@@ -72,11 +66,7 @@ public class RefillServlet extends HttpServlet {
 	session.setAttribute("currentSessionUser", user);
 	session.setAttribute("currentSessionUserName", username);
 	session.setAttribute("balance", user.getMoney());
-	try {
-	    CoffeeMachine.updateData(user);
-	} catch (SQLException e) {
-	    e.printStackTrace();
-	}
+	CoffeeMachine.updateData(user);
     }
 
     /**

@@ -1,7 +1,6 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.CoffeeMachine;
 import com.evnemich.coffeemachine.models.User;
 
 /**
@@ -55,39 +55,33 @@ public class BuyIngredientsServlet extends HttpServlet {
 
 	while (drinks.hasMoreElements()) {
 	    name = drinks.nextElement();
-	    try {
-		if (!CoffeeMachine.buy(user, name, 1)) {
-		    del = true;
-		}
+	    if (!CoffeeMachine.buy(user, name, 1)) {
+		del = true;
 		session.removeAttribute(name);
-	    } catch (SQLException e) {
-
 	    }
-	}
 
-	Enumeration<String> ingredients = request.getParameterNames();
-	while (!del && ingredients.hasMoreElements()) {
-	    name = ingredients.nextElement();
-	    try {
-		int i = Integer.parseInt((String) request.getParameter(name));
-		if (i != 0)
-		    if (!CoffeeMachine.buy(user, name, i))
-			del = true;
-	    } catch (NumberFormatException e) {
-		response.sendRedirect("failed.jsp");
-		return;
-	    } catch (SQLException e) {
-		e.printStackTrace();
+	    Enumeration<String> ingredients = request.getParameterNames();
+	    while (!del && ingredients.hasMoreElements()) {
+		name = ingredients.nextElement();
+		try {
+		    int i = Integer.parseInt((String) request.getParameter(name));
+		    if (i != 0)
+			if (!CoffeeMachine.buy(user, name, i))
+			    del = true;
+		} catch (NumberFormatException e) {
+		    response.sendRedirect("failed.jsp");
+		    return;
+		}
 	    }
+	    if (del)
+		response.sendRedirect("partlyDone.jsp");
+	    else {
+		response.sendRedirect("done.jsp");
+	    }
+	    session.setAttribute("currentSessionUser", user);
+	    session.setAttribute("currentSessionUserName", username);
+	    session.setAttribute("balance", user.getMoney());
 	}
-	if (del)
-	    response.sendRedirect("partlyDone.jsp");
-	else {
-	    response.sendRedirect("done.jsp");
-	}
-	session.setAttribute("currentSessionUser", user);
-	session.setAttribute("currentSessionUserName", username);
-	session.setAttribute("balance", user.getMoney());
     }
 
     /**

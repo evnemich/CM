@@ -16,7 +16,7 @@
 	%>
 	Check drinks you want to buy
 	<form action="BuyDrink">
-		<table border="1" v>
+		<table border="1">
 			<tr>
 				<td>Name</td>
 				<td>Price</td>

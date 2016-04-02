@@ -1,8 +1,6 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -11,19 +9,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.CoffeeMachine;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class SetPrices
+ * Servlet implementation class LogIn
  */
-@WebServlet("/SetPrices")
-public class SetPricesServlet extends HttpServlet {
+@WebServlet(urlPatterns = { "/LogIn" })
+public class LogInServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public SetPricesServlet() {
+    public LogInServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -34,40 +33,24 @@ public class SetPricesServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	HttpSession session = request.getSession(true);
-	String name;
-	Object o = session.getAttribute("currentSessionUser");
-	User user;
-	int i;
-	if (o == null) {
-	    response.sendRedirect("failed.jsp");
-	    return;
-	}
-	user = (User) o;
-
-	Enumeration<String> products = request.getParameterNames();
-	while (products.hasMoreElements()) {
-	    name = products.nextElement();
-	    try {
-		i = Integer.parseInt((String) request.getParameter(name));
-	    } catch (NumberFormatException e) {
-		response.sendRedirect("failed.jsp");
-		return;
-	    }
-	    if (i != 0)
-		if (!CoffeeMachine.setPrice(user, name, i)) {
-		    response.sendRedirect("failed.jsp");
-		    return;
-		}
-	}
-	response.sendRedirect("done.jsp");
 	try {
-	    CoffeeMachine.updateData(user);
-	} catch (SQLException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
+	    User user = CoffeeMachine.logIn(request.getParameter("login"), request.getParameter("password"));
+
+	    if (user.isValid()) {
+		System.out.println("UPD");
+		CoffeeMachine.updateData(user);
+		System.out.println("UPD");
+		HttpSession session = request.getSession(true);
+		session.setAttribute("currentSessionUser", user);
+		session.setAttribute("balance", user.getMoney());
+		session.setAttribute("currentSessionUserName", request.getParameter("login"));
+		response.sendRedirect("done.jsp");
+	    } else
+		response.sendRedirect("loginFailed.jsp");
 	}
 
+	catch (Throwable theException) {
+	}
     }
 
     /**

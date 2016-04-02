@@ -1,7 +1,6 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,17 +9,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.CoffeeMachine;
+import com.evnemich.coffeemachine.models.User;
+
 /**
- * Servlet implementation class BuyDrink
+ * Servlet implementation class LogOut
  */
-@WebServlet("/BuyDrink")
-public class BuyDrinkServlet extends HttpServlet {
+@WebServlet("/LogOut")
+public class LogOutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BuyDrinkServlet() {
+    public LogOutServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -32,17 +34,18 @@ public class BuyDrinkServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
 	// TODO Auto-generated method stub
-	String name;
 	HttpSession session = request.getSession(true);
-	Enumeration<String> names = request.getParameterNames();
-	while (names.hasMoreElements()) {
-	    name = names.nextElement();
-	    if (((String) request.getParameter(name)).equals("on")) {
-		System.out.println("Added " + name);
-		session.setAttribute(name, 1);
-	    }
+	Object o = session.getAttribute("currentSessionUser");
+	if (o != null) {
+	    User user = (User) o;
+	    CoffeeMachine.logOut(user);
+	    session.removeAttribute("currentSessionUser");
+	    session.removeAttribute("currentSessionUserName");
+	    session.removeAttribute("balance");
 	}
-	response.sendRedirect("ingredients.jsp");
+	response.sendRedirect("logout.jsp");
+	session.invalidate();
+
     }
 
     /**

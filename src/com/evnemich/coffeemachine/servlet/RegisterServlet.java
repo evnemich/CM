@@ -1,7 +1,6 @@
-package com.evnemich.coffeemachine;
+package com.evnemich.coffeemachine.servlet;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,19 +9,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.evnemich.coffeemachine.DataBase;
 import com.evnemich.coffeemachine.models.User;
 
 /**
- * Servlet implementation class AddProducts
+ * Servlet implementation class Register
  */
-@WebServlet("/AddProduct")
-public class AddProductServlet extends HttpServlet {
+@WebServlet("/Register")
+public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public AddProductServlet() {
+    public RegisterServlet() {
 	super();
 	// TODO Auto-generated constructor stub
     }
@@ -33,40 +33,22 @@ public class AddProductServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	HttpSession session = request.getSession(true);
-	User user;
-	boolean drink;
-	Object o = session.getAttribute("currentSessionUser");
 
-	if (o == null) {
-	    response.sendRedirect("failed.jsp");
-	    return;
-	} else {
-	    user = (User) o;
-	}
-
-	o = request.getParameter("drink");
-	if (o == null)
-	    drink = false;
-	else
-	    drink = true;
+	User user = null;
 	try {
-	    if (!CoffeeMachine.addNewProduct(user, request.getParameter("name"), drink)) {
-		response.sendRedirect("failed.jsp");
-		return;
-	    }
-	} catch (NumberFormatException e) {
-	    // TODO Auto-generated catch block
+	    user = DataBase.register(request.getParameter("login"), request.getParameter("password"));
+	    if (user.isValid()) {
+
+		HttpSession session = request.getSession(true);
+		session.setAttribute("currentSessionUser", user);
+		session.setAttribute("balance", 0.0);
+		session.setAttribute("currentSessionUserName", request.getParameter("login"));
+		response.sendRedirect("done.jsp"); // logged-in page
+	    } else
+		response.sendRedirect("userAlreadyExist.jsp"); // error page();
+	} catch (ClassNotFoundException e) {
 	    e.printStackTrace();
 	}
-	response.sendRedirect("done.jsp");
-	try {
-	    CoffeeMachine.updateData(user);
-	} catch (SQLException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-
     }
 
     /**
